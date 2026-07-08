@@ -1,0 +1,10 @@
+<svg viewBox="16 22 68 68" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Impeccabyte">
+  <title>Impeccabyte emblem — reversed</title>
+  <rect x="16" y="60" width="68" height="30" rx="7" fill="#FAF6EF"></rect>
+  <rect x="25" y="68" width="13" height="9" rx="2.5" fill="#2A211A" opacity="0.16"></rect>
+  <g fill="#FAF6EF">
+    <rect x="28" y="46" width="11" height="11" rx="3.4" opacity="0.78"></rect>
+    <rect x="43" y="34" width="11" height="11" rx="3.4" opacity="0.89"></rect>
+    <rect x="58" y="22" width="11" height="11" rx="3.4"></rect>
+  </g>
+</svg>
