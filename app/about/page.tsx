@@ -7,11 +7,13 @@ import { IconChip } from "@/components/ui/icon-chip";
 import { Callout } from "@/components/ui/callout";
 import { SectionIntro } from "@/components/site/bits";
 import { DarkCTA } from "@/components/site/dark-cta";
+import { ogImages } from "@/lib/og/meta";
 
 export const metadata: Metadata = {
   title: "About — merchant services for the next generation",
   description:
     "Impeccabyte is merchant services for the freelancers, makers, and small storefronts who deserve fair pricing and a human on the other end. Based in Austin, backed by Maverick Payments.",
+  ...ogImages("about", "Impeccabyte — payments, done right"),
 };
 
 const VALUES = [

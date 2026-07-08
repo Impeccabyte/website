@@ -9,11 +9,13 @@ import { SectionIntro } from "@/components/site/bits";
 import { DarkCTA } from "@/components/site/dark-cta";
 import { TiltPanel } from "@/components/site/tilt-panel";
 import { PartnershipGraphic } from "@/components/graphics/partnership-graphic";
+import { ogImages } from "@/lib/og/meta";
 
 export const metadata: Metadata = {
   title: "Partnerships — grow with Impeccabyte",
   description:
     "Refer merchants, build your own book on Maverick's rails, or embed payments in your product — with transparent revenue splits and a real team behind every deal.",
+  ...ogImages("partnerships", "Impeccabyte — grow with a partner"),
 };
 
 const WAYS = [

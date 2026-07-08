@@ -12,6 +12,7 @@ import { DarkCTA } from "@/components/site/dark-cta";
 import { TiltPanel } from "@/components/site/tilt-panel";
 import { SolutionGraphic } from "@/components/graphics/solution-graphic";
 import { SOLUTIONS, type SolutionKey } from "@/lib/data";
+import { ogImages } from "@/lib/og/meta";
 
 // Every solution (incl. agents, reachable from Partnerships) gets a static page.
 export function generateStaticParams() {
@@ -22,7 +23,11 @@ export async function generateMetadata({ params }: { params: Promise<{ key: stri
   const { key } = await params;
   const s = SOLUTIONS[key as SolutionKey];
   if (!s) return {};
-  return { title: `${s.titleA} ${s.titleEm} · ${s.nav}`, description: s.subtitle };
+  return {
+    title: `${s.titleA} ${s.titleEm} · ${s.nav}`,
+    description: s.subtitle,
+    ...ogImages(`industry-${s.key}`, `${s.nav} · Impeccabyte`),
+  };
 }
 
 export default async function SolutionPage({ params }: { params: Promise<{ key: string }> }) {

@@ -43,9 +43,11 @@ export const metadata: Metadata = {
     description: "Transparent interchange-plus pricing, fast payouts, and a real team behind you.",
     type: "website",
     siteName: "Impeccabyte",
+    images: [{ url: "/og/home.png", width: 1200, height: 630, alt: "Impeccabyte — payments that just work" }],
   },
   twitter: {
     card: "summary_large_image",
+    images: [{ url: "/og/home.png", alt: "Impeccabyte — payments that just work" }],
   },
 };
 

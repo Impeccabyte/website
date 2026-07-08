@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Banknote, Plus, Check } from "lucide-react";
+import { ogImages } from "@/lib/og/meta";
 import { Container } from "@/components/site/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Card } from "@/components/ui/card";
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
   title: "Pricing — interchange-plus, nothing hidden",
   description:
     "Interchange-plus pricing with no bundled tiers and no padding. See the true cost of every card, plus our one clear rate — the same fair deal on every product.",
+  ...ogImages("pricing", "Impeccabyte — transparent interchange-plus pricing"),
 };
 
 const EXPLAINER = [

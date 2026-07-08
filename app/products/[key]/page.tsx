@@ -14,6 +14,7 @@ import { TiltPanel } from "@/components/site/tilt-panel";
 import { ProductGraphic } from "@/components/graphics/product-graphic";
 import { ProductGraphic2 } from "@/components/graphics/product-graphic-2";
 import { PRODUCTS, productOrder, type ProductKey } from "@/lib/data";
+import { ogImages } from "@/lib/og/meta";
 
 export function generateStaticParams() {
   return productOrder.map((key) => ({ key }));
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ key: stri
   return {
     title: `${p.titleA} ${p.titleEm} · ${p.nav}`,
     description: p.subtitle,
+    ...ogImages(`product-${p.key}`, `${p.nav} · Impeccabyte`),
   };
 }
 
