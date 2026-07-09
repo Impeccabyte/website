@@ -47,11 +47,8 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2.5">
-          <ButtonLink href="/contact" variant="ghost" size="sm" className="hidden sm:inline-flex">
-            Sign in
-          </ButtonLink>
           <ButtonLink href="/contact" variant="primary" size="sm">
-            Get a quote
+            Get a Quote
           </ButtonLink>
           <Button
             variant="ghost"
@@ -302,10 +299,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
 
         <div className="mt-6 flex flex-col gap-2.5">
           <ButtonLink href="/contact" variant="primary" size="lg" block onClick={onClose}>
-            Get a quote
-          </ButtonLink>
-          <ButtonLink href="/contact" variant="secondary" size="lg" block onClick={onClose}>
-            Sign in
+            Get a Quote
           </ButtonLink>
         </div>
       </div>

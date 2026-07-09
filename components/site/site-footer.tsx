@@ -6,12 +6,12 @@ import { PRODUCTS, SOLUTIONS, footerProductKeys, footerSolutionKeys } from "@/li
 const SOCIALS: { label: string; href: string; path: React.ReactNode }[] = [
   {
     label: "Facebook",
-    href: "#",
+    href: "https://www.facebook.com/impeccabyte/",
     path: <path d="M14 8.5h1.8V5.6C15.5 5.5 14.4 5.4 13.4 5.4c-2.2 0-3.6 1.3-3.6 3.7v2H7v3h2.8V22h3.4v-7.9h2.7l.4-3h-3.1V9.4c0-.6.2-.9 1.4-.9z" />,
   },
   {
     label: "Instagram",
-    href: "#",
+    href: "https://www.instagram.com/impeccabyte",
     path: (
       <>
         <rect x="4.5" y="4.5" width="15" height="15" rx="4.5" fill="none" stroke="currentColor" strokeWidth="1.7" />
@@ -21,25 +21,9 @@ const SOCIALS: { label: string; href: string; path: React.ReactNode }[] = [
     ),
   },
   {
-    label: "X",
-    href: "#",
-    path: <path d="M4 4h3.4l4 5.5L16.2 4H20l-6.3 8L20.4 20H17l-4.4-6L7.5 20H4l6.7-8.5z" />,
-  },
-  {
     label: "TikTok",
-    href: "#",
+    href: "https://www.tiktok.com/@impeccabyte",
     path: <path d="M13.8 3.5c.3 1.9 1.4 3.4 3.7 3.6v2.4c-1.2.1-2.4-.3-3.6-1v5.5c0 3-2.1 4.9-4.7 4.9-2.5 0-4.4-1.9-4.4-4.3 0-2.6 2.2-4.6 5.1-4.1v2.5c-.4-.1-.8-.2-1.2-.1-1 .1-1.6.8-1.5 1.9.1 1 .9 1.6 1.9 1.5 1-.1 1.6-.9 1.6-2V3.5z" />,
-  },
-  {
-    label: "LinkedIn",
-    href: "#",
-    path: (
-      <>
-        <rect x="4" y="9" width="3" height="11" />
-        <circle cx="5.5" cy="5.5" r="1.8" />
-        <path d="M10 9h2.9v1.5c.5-.9 1.6-1.7 3.1-1.7 2.6 0 3.5 1.6 3.5 4.2V20h-3v-6c0-1.4-.5-2.2-1.7-2.2-1 0-1.6.7-1.8 1.4-.1.2-.1.6-.1.9V20h-3z" />
-      </>
-    ),
   },
 ];
 
@@ -116,6 +100,8 @@ export function SiteFooter() {
                 <a
                   key={s.label}
                   href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={s.label}
                   className="flex h-9 w-9 items-center justify-center rounded-round transition-colors"
                   style={{ background: "rgba(243,235,222,0.08)" }}

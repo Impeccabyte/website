@@ -43,7 +43,7 @@ export default function HomePage() {
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-5">
                 <ButtonLink href="/contact" variant="primary" size="lg">
-                  Get a quote
+                  Get a Quote
                 </ButtonLink>
                 <Link
                   href="/pricing"
@@ -181,7 +181,7 @@ export default function HomePage() {
         titleA="Start today."
         titleEm="Get paid tomorrow."
         body="Your custom interchange-plus rate is one short form away — no monthly fee, no surprises, no corporate gatekeeping."
-        primary={{ label: "Get a quote", href: "/contact" }}
+        primary={{ label: "Get a Quote", href: "/contact" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
     </>

@@ -52,7 +52,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ key: 
               <p className="mt-5 max-w-[500px] text-[19px] leading-relaxed text-ink-600">{s.subtitle}</p>
               <div className="mt-8 flex flex-wrap items-center gap-5">
                 <ButtonLink href="/contact" variant="primary" size="lg">
-                  Get a quote
+                  Get a Quote
                 </ButtonLink>
                 <Link href="/pricing" className="inline-flex items-center gap-1.5 text-[16px] font-semibold text-clay-600 hover:text-clay-700">
                   See pricing <ArrowRight size={17} />
@@ -113,7 +113,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ key: 
         titleA="Let's"
         titleEm="set you up."
         body="Get a custom interchange-plus quote built around how your business actually takes payments."
-        primary={{ label: "Get a quote", href: "/contact" }}
+        primary={{ label: "Get a Quote", href: "/contact" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
     </>
