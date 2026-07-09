@@ -7,11 +7,13 @@ import { Wordmark } from "@/components/site/wordmark";
 import { ButtonLink } from "@/components/ui/button-link";
 import { CheckItem } from "@/components/site/bits";
 import { DarkCTA } from "@/components/site/dark-cta";
+import { ogImages } from "@/lib/og/meta";
 
 export const metadata: Metadata = {
   title: "Austin LGBT Chamber of Commerce — member pricing & local support",
   description:
     "A proud member of the Austin LGBT Chamber of Commerce. Fellow members get our best pricing from day one, a waived monthly minimum, free on-site onboarding, and a dedicated local contact.",
+  ...ogImages("chamber", "Impeccabyte — a proud Austin LGBT Chamber of Commerce member and local partner"),
 };
 
 /** Rainbow treatments shared across the page — the Chamber's pride mark. */

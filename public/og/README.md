@@ -15,6 +15,7 @@ pre-rendered PNGs keeps `next/og` out of the production build entirely.
 | `home.png` | `/` | Payments that just *work* |
 | `pricing.png` | `/pricing` | Transparent *interchange-plus* pricing |
 | `about.png` | `/about` | Payments, *done right* |
+| `chamber.png` | `/chamber` | A proud member, *and a local partner* |
 | `partnerships.png` | `/partnerships` | Grow with a *partner* |
 | `contact.png` | `/contact` | Let's price *your business* |
 | `product-payments.png` | `/products/payments` | Accept every *card* |

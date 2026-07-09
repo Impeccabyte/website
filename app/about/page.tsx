@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Sparkles, Heart, Zap, Lock, ShieldCheck, Globe, Clock, ImageIcon } from "lucide-react";
+import { Sparkles, Heart, Zap, Lock, ShieldCheck, Globe, Clock, Check, MapPin, ArrowDownToLine } from "lucide-react";
 import { Container } from "@/components/site/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Card } from "@/components/ui/card";
@@ -7,6 +7,8 @@ import { IconChip } from "@/components/ui/icon-chip";
 import { Callout } from "@/components/ui/callout";
 import { SectionIntro } from "@/components/site/bits";
 import { DarkCTA } from "@/components/site/dark-cta";
+import { TiltPanel } from "@/components/site/tilt-panel";
+import { Wordmark } from "@/components/site/wordmark";
 import { ogImages } from "@/lib/og/meta";
 
 export const metadata: Metadata = {
@@ -72,16 +74,75 @@ export default function AboutPage() {
                 Maverick Payments.
               </p>
             </div>
-            <div
-              className="flex h-[360px] items-center justify-center rounded-lg border border-border-default bg-clay-50"
-              role="img"
-              aria-label="Team photo placeholder"
+            <TiltPanel
+              gradient="radial-gradient(120% 100% at 72% 14%, var(--amber-50), var(--clay-50) 60%, var(--surface-card) 92%)"
+              className="min-h-[360px]"
             >
-              <div className="text-center text-ink-400">
-                <ImageIcon size={34} className="mx-auto" strokeWidth={1.6} />
-                <p className="mt-2 text-[14px] font-medium">Drop your team photo</p>
+              <div className="relative w-[302px]">
+                {/* depth block behind */}
+                <div
+                  className="absolute z-0 rounded-lg shadow-md"
+                  style={{
+                    top: 14,
+                    right: -14,
+                    width: 250,
+                    height: 180,
+                    background: "linear-gradient(135deg, var(--clay-400), var(--amber-400))",
+                    transform: "rotate(6deg)",
+                  }}
+                  aria-hidden
+                />
+
+                {/* main story card */}
+                <div
+                  className="relative z-[2] rounded-lg border border-border-default shadow-lg"
+                  style={{ background: "var(--surface-card)", padding: "22px 22px 20px", transform: "rotate(-2deg)" }}
+                >
+                  <div className="flex items-center justify-between">
+                    <Wordmark size={16} emblem={28} />
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-pill border border-sage-100 bg-sage-50 px-2.5 py-1 text-[11px] font-bold text-sage-600"
+                    >
+                      <Check size={13} strokeWidth={3} />
+                      Active
+                    </span>
+                  </div>
+
+                  <div className="mt-[18px]">
+                    <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-clay-600">
+                      Your rate, in plain sight
+                    </div>
+                    <div className="mt-2 font-display text-[30px] font-semibold tracking-[-0.02em] text-ink-900">
+                      Interchange<span className="whitespace-nowrap text-clay-500"> + 0.32%</span>
+                    </div>
+                    <div className="mt-[5px] text-[12.5px] text-ink-500">No bundled markup. No surprise fees.</div>
+                  </div>
+
+                  <div className="mb-[14px] mt-4 h-px bg-ink-100" />
+
+                  <div className="flex items-center gap-2 text-[12px] text-ink-500">
+                    <MapPin size={15} strokeWidth={1.85} />
+                    <span>Built in Austin, TX</span>
+                    <span className="h-[3px] w-[3px] rounded-full bg-ink-300" />
+                    <span>Backed by Maverick</span>
+                  </div>
+                </div>
+
+                {/* floating payout chip */}
+                <div
+                  className="absolute z-[3] flex items-center gap-[11px] rounded-md border border-border-default shadow-lg"
+                  style={{ left: -22, bottom: -20, background: "var(--surface-card)", padding: "12px 15px", transform: "rotate(-4deg)" }}
+                >
+                  <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                    <ArrowDownToLine size={18} strokeWidth={2.4} />
+                  </span>
+                  <div>
+                    <div className="text-[14px] font-bold leading-none text-ink-900">$2,480.00</div>
+                    <div className="mt-0.5 text-[11.5px] text-ink-500">Paid out · arrives tomorrow</div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </TiltPanel>
           </div>
         </Container>
       </section>

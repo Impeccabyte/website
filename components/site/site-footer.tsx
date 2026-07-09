@@ -158,11 +158,14 @@ export function SiteFooter() {
               © 2026 Impeccabyte, LLC. Impeccabyte is a registered agent of Maverick Payments.
             </p>
             <div className="flex gap-5">
-              <Link href="#" className="text-[13px] text-[rgba(243,235,222,0.6)] hover:text-[#F3EBDE]">
+              <Link href="/privacy" className="text-[13px] text-[rgba(243,235,222,0.6)] hover:text-[#F3EBDE]">
                 Privacy
               </Link>
-              <Link href="#" className="text-[13px] text-[rgba(243,235,222,0.6)] hover:text-[#F3EBDE]">
+              <Link href="/terms" className="text-[13px] text-[rgba(243,235,222,0.6)] hover:text-[#F3EBDE]">
                 Terms
+              </Link>
+              <Link href="/cookies" className="text-[13px] text-[rgba(243,235,222,0.6)] hover:text-[#F3EBDE]">
+                Cookies
               </Link>
             </div>
           </div>
