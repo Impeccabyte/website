@@ -1,5 +1,5 @@
 import { INDUSTRY_OPTIONS, VOLUME_OPTIONS } from "@/lib/quote-options";
-import { PIPELINE_ID, DEALSTAGE_NEW_PROSPECT, DEAL_TO_CONTACT_ASSOC, NOTE_TO_DEAL_ASSOC } from "@/lib/hubspot/constants";
+import { PIPELINE_ID, DEALSTAGE_NEW_PROSPECT, DEALSTAGE_STATEMENT_REQUESTED, DEAL_TO_CONTACT_ASSOC, NOTE_TO_DEAL_ASSOC, STATEMENT_MIME, MAX_STATEMENT_BYTES } from "@/lib/hubspot/constants";
 
 export type QuoteInput = {
   businessName: string;
@@ -57,11 +57,24 @@ export function buildContactProperties(d: QuoteInput): Record<string, string> {
   return props;
 }
 
-export function buildDealPayload(d: QuoteInput, contactId: string) {
+export type StatementResult =
+  | { ok: true; file: File | null }
+  | { ok: false; error: string };
+
+export function validateStatementFile(file: File | null): StatementResult {
+  // No file, or an empty selection, means "no statement" — not an error.
+  if (!file || file.size === 0 || !file.name) return { ok: true, file: null };
+  const isPdf = file.type === STATEMENT_MIME || file.name.toLowerCase().endsWith(".pdf");
+  if (!isPdf) return { ok: false, error: "Please upload a PDF file." };
+  if (file.size > MAX_STATEMENT_BYTES) return { ok: false, error: "File is too large (max 10 MB)." };
+  return { ok: true, file };
+}
+
+export function buildDealPayload(d: QuoteInput, contactId: string, hasStatement = false) {
   const properties: Record<string, string> = {
     dealname: `${d.businessName} — Quote Request`,
     pipeline: PIPELINE_ID,
-    dealstage: DEALSTAGE_NEW_PROSPECT,
+    dealstage: hasStatement ? DEALSTAGE_STATEMENT_REQUESTED : DEALSTAGE_NEW_PROSPECT,
     monthly_processing_volume: d.monthlyVolume,
   };
   if (d.currentProcessor) properties.current_processor = d.currentProcessor;
@@ -77,7 +90,7 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-export function buildNotePayload(d: QuoteInput, dealId: string, isoTimestamp: string) {
+export function buildNotePayload(d: QuoteInput, dealId: string, isoTimestamp: string, attachmentId?: string) {
   const industryLabel = INDUSTRY_LABELS.get(d.industry) ?? d.industry;
   const volumeLabel = VOLUME_OPTIONS.find((o) => o.value === d.monthlyVolume)?.label ?? d.monthlyVolume;
   const lines = [
@@ -89,8 +102,10 @@ export function buildNotePayload(d: QuoteInput, dealId: string, isoTimestamp: st
     `Email: ${escapeHtml(d.email)}`,
     `Phone: ${escapeHtml(d.phone || "—")}`,
   ];
+  const properties: Record<string, string> = { hs_note_body: lines.join("<br>"), hs_timestamp: isoTimestamp };
+  if (attachmentId) properties.hs_attachment_ids = attachmentId;
   return {
-    properties: { hs_note_body: lines.join("<br>"), hs_timestamp: isoTimestamp },
+    properties,
     associations: [
       { to: { id: dealId }, types: [{ associationCategory: "HUBSPOT_DEFINED", associationTypeId: NOTE_TO_DEAL_ASSOC }] },
     ],

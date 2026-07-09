@@ -4,6 +4,7 @@ import {
   buildContactProperties,
   buildDealPayload,
   buildNotePayload,
+  validateStatementFile,
   type QuoteInput,
 } from "@/lib/hubspot/quote-form";
 
@@ -112,5 +113,64 @@ describe("buildNotePayload", () => {
     expect(p.properties.hs_note_body).toContain("Food &amp; drink"); // industry label, HTML-escaped
     expect(p.properties.hs_note_body).toContain("owner@saffron.com");
     expect(p.associations[0].types[0].associationTypeId).toBe(214);
+  });
+});
+
+function fakeFile(props: { size: number; type: string; name: string }): File {
+  return props as unknown as File;
+}
+
+describe("validateStatementFile", () => {
+  it("treats null as no statement", () => {
+    expect(validateStatementFile(null)).toEqual({ ok: true, file: null });
+  });
+
+  it("treats an empty (size 0) file as no statement", () => {
+    const f = fakeFile({ size: 0, type: "application/pdf", name: "empty.pdf" });
+    expect(validateStatementFile(f)).toEqual({ ok: true, file: null });
+  });
+
+  it("rejects a non-PDF file", () => {
+    const f = fakeFile({ size: 1000, type: "image/png", name: "logo.png" });
+    expect(validateStatementFile(f)).toEqual({ ok: false, error: "Please upload a PDF file." });
+  });
+
+  it("rejects a file over the size limit", () => {
+    const f = fakeFile({ size: 11 * 1024 * 1024, type: "application/pdf", name: "big.pdf" });
+    expect(validateStatementFile(f)).toEqual({ ok: false, error: "File is too large (max 10 MB)." });
+  });
+
+  it("accepts a valid PDF (by mime)", () => {
+    const f = fakeFile({ size: 5000, type: "application/pdf", name: "statement.pdf" });
+    expect(validateStatementFile(f)).toEqual({ ok: true, file: f });
+  });
+
+  it("accepts a PDF identified by extension when the mime is blank", () => {
+    const f = fakeFile({ size: 5000, type: "", name: "statement.PDF" });
+    expect(validateStatementFile(f)).toEqual({ ok: true, file: f });
+  });
+});
+
+describe("buildDealPayload — statement stage", () => {
+  it("uses the Statement Requested stage when hasStatement is true", () => {
+    const p = buildDealPayload(sample, "555", true) as any;
+    expect(p.properties.dealstage).toBe("qualifiedtobuy");
+  });
+
+  it("keeps New Prospect when hasStatement is false/omitted", () => {
+    const p = buildDealPayload(sample, "555") as any;
+    expect(p.properties.dealstage).toBe("3963348702");
+  });
+});
+
+describe("buildNotePayload — attachment", () => {
+  it("adds hs_attachment_ids when an attachmentId is provided", () => {
+    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z", "77123") as any;
+    expect(p.properties.hs_attachment_ids).toBe("77123");
+  });
+
+  it("omits hs_attachment_ids when no attachmentId is given", () => {
+    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z") as any;
+    expect(p.properties).not.toHaveProperty("hs_attachment_ids");
   });
 });

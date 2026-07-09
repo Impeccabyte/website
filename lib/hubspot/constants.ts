@@ -3,3 +3,7 @@ export const PIPELINE_ID = "default"; // "Merchant Services"
 export const DEALSTAGE_NEW_PROSPECT = "3963348702"; // "New Prospect"
 export const DEAL_TO_CONTACT_ASSOC = 3; // HUBSPOT_DEFINED deal→contact
 export const NOTE_TO_DEAL_ASSOC = 214; // HUBSPOT_DEFINED note→deal
+export const DEALSTAGE_STATEMENT_REQUESTED = "qualifiedtobuy"; // "Statement Requested"
+export const STATEMENT_FOLDER_PATH = "/quote-statements";
+export const STATEMENT_MIME = "application/pdf";
+export const MAX_STATEMENT_BYTES = 10 * 1024 * 1024; // 10 MB
