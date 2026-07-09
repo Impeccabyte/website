@@ -6,10 +6,11 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   hint?: string;
   prefix?: string;
   required?: boolean;
+  error?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, hint, prefix, required, id, ...props }, ref) => {
+  ({ className, label, hint, prefix, required, error, id, ...props }, ref) => {
     const autoId = React.useId();
     const inputId = id ?? autoId;
     return (
@@ -38,7 +39,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
         </div>
-        {hint && <span className="text-xs text-ink-500">{hint}</span>}
+        {error ? (
+          <span className="text-xs text-brick-500">{error}</span>
+        ) : hint ? (
+          <span className="text-xs text-ink-500">{hint}</span>
+        ) : null}
       </div>
     );
   }
