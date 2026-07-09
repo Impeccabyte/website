@@ -28,7 +28,13 @@ export async function submitQuote(
   // Turnstile verification gates all HubSpot writes.
   const token = String(formData.get("cf-turnstile-response") ?? "");
   const remoteIp = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim();
-  const human = await verifyTurnstileToken(token, remoteIp);
+  let human: boolean;
+  try {
+    human = await verifyTurnstileToken(token, remoteIp);
+  } catch (err) {
+    console.error("[submitQuote] Turnstile verification error:", err);
+    return { status: "error", message: GENERIC_ERROR };
+  }
   if (!human) {
     return { status: "error", message: "Please complete the anti-spam check and try again." };
   }
