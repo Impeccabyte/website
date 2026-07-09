@@ -68,6 +68,11 @@ is the right outcome for a quote pipeline.
    - `monthly_processing_volume` — dropdown (enumeration), options matching the
      form's `VOLUME_OPTIONS` buckets (0–25k / 25k–100k / 100k–500k / 500k+).
    - `current_processor` — single-line text.
+3. **Create a Cloudflare Turnstile widget:** free Cloudflare account →
+   Turnstile → add a site (domain `impeccabyte.com`; the site does not need to
+   be hosted on Cloudflare). Copy the **site key** into `.env` as
+   `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (public/client-safe) and the **secret key**
+   as `TURNSTILE_SECRET_KEY` (server-only).
 
 ## Field mapping
 
@@ -83,7 +88,9 @@ is the right outcome for a quote pipeline.
 
 ## Data flow (one submission)
 
-1. Client calls the server action with the text fields (PDF ignored).
+1. Client calls the server action with the text fields (PDF ignored) plus the
+   Turnstile token. Server **verifies the Turnstile token** and checks the
+   honeypot first; on either failure, stop and return an error (write nothing).
 2. **Upsert Contact by email:**
    `POST /crm/v3/objects/contacts/batch/upsert` with `idProperty=email`,
    setting `email`, `phone`, `company`, `industry`.
@@ -105,9 +112,15 @@ Deal stage constant: New Prospect = `3963348702`. Pipeline = `default`
 - **Server-side validation** mirroring the HTML5 rules: required = business
   name, industry, monthly volume, email; validate email format. Reject with a
   field-level or general error if invalid.
-- **Honeypot** hidden field — if filled, silently accept (return success) but
-  do not write to HubSpot. Cheap bot defense. Cloudflare Turnstile is a later
-  option if spam becomes a real problem.
+- **Cloudflare Turnstile** (primary bot defense): the form renders the
+  Turnstile widget (managed/invisible mode) and passes its token to the server
+  action. Before touching HubSpot, the server verifies the token via
+  `POST https://challenges.cloudflare.com/turnstile/v0/siteverify` with
+  `TURNSTILE_SECRET_KEY`. On failure → reject with a general error, write
+  nothing.
+- **Honeypot** hidden field (kept as a cheap complementary layer): if filled,
+  silently accept (return success) but do not write to HubSpot — catches naive
+  bots before verification even matters.
 - **HubSpot API failure:** log server-side with the response body; show the
   user a friendly "couldn't submit — try again or email us" state. Never lose a
   lead silently. If the Contact upsert succeeds but the Deal create fails, log
@@ -117,7 +130,8 @@ Deal stage constant: New Prospect = `3963348702`. Pipeline = `default`
 
 - **Unit:** field-mapping and validation as pure functions (form input →
   HubSpot payloads; honeypot rejection; email validation).
-- **Integration:** the server action with `fetch` mocked, asserting the
+- **Integration:** the server action with `fetch` mocked, asserting Turnstile
+  verification is called and gates the flow (fail = no HubSpot calls), plus the
   contact-upsert payload, the deal payload (pipeline/stage/props/association),
   and the note payload.
 - **Manual:** submit once against the live account; confirm a Contact and an
@@ -127,6 +141,5 @@ Deal stage constant: New Prospect = `3963348702`. Pipeline = `default`
 
 - PDF/merchant-statement upload → HubSpot Files, and advancing the deal to
   "Statement Requested" when a statement is attached.
-- Cloudflare Turnstile / stronger bot mitigation.
 - Surfacing submissions in HubSpot's Forms analytics.
 - Marketing-attribution via the HubSpot tracking cookie (`hutk`).
