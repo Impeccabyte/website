@@ -4,7 +4,7 @@ import type { Metadata } from "next";
  * Metadata fragment that points Open Graph + Twitter at a pre-rendered static
  * share image under /public/og (see public/og/README.md). These are shipped as
  * static PNGs on purpose: it keeps `next/og` — which renders via WebAssembly
- * and fails under CloudLinux's LVE address-space limit — out of the build.
+ * and is memory-hungry at build time — out of the build.
  */
 export function ogImages(slug: string, alt: string): Metadata {
   const url = `/og/${slug}.png`;

@@ -4,10 +4,9 @@ These are the 1200×630 PNGs used for `og:image` / `twitter:image`, wired up in
 each page's metadata via `lib/og/meta.ts` (`ogImages(slug, alt)`).
 
 They are shipped as **static files on purpose**. They were originally generated
-with `next/og` (satori + resvg), but that renders through WebAssembly, which
-fails to build under CloudLinux's LVE "Max address space" limit
-(`WebAssembly.instantiate(): Out of memory`). Serving pre-rendered PNGs keeps
-`next/og` out of the production build entirely.
+with `next/og` (satori + resvg), but that renders through WebAssembly, which is
+memory-hungry at build time and can OOM on constrained builders. Serving
+pre-rendered PNGs keeps `next/og` out of the production build entirely.
 
 ## Files → routes
 

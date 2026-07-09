@@ -12,13 +12,6 @@ const eslintConfig = defineConfig([
       "react/no-unescaped-entities": "off",
     },
   },
-  {
-    // Passenger (cPanel) requires a CommonJS startup file, so require() is correct here.
-    files: ["server.js"],
-    rules: {
-      "@typescript-eslint/no-require-imports": "off",
-    },
-  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

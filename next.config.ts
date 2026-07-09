@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Don't advertise the framework in response headers.
   poweredByHeader: false,
-  // Gzip responses from the Node server (Passenger passes them through).
+  // Gzip responses from the Node server.
   compress: true,
 };
 
