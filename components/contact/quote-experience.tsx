@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useActionState } from "react";
+import Script from "next/script";
 import { Check, FileUp, MapPin, Clock } from "lucide-react";
 import { Container } from "@/components/site/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
@@ -9,25 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
-
-const INDUSTRY_OPTIONS = [
-  { value: "", label: "Select an industry" },
-  { value: "retail", label: "Retail & shops" },
-  { value: "food", label: "Food & drink" },
-  { value: "services", label: "Professional services" },
-  { value: "ecommerce", label: "E-commerce" },
-  { value: "nonprofit", label: "Nonprofit" },
-  { value: "highrisk", label: "High-risk / specialty" },
-  { value: "other", label: "Something else" },
-];
-
-const VOLUME_OPTIONS = [
-  { value: "", label: "Monthly volume" },
-  { value: "0-25k", label: "Up to $25,000" },
-  { value: "25k-100k", label: "$25,000 – $100,000" },
-  { value: "100k-500k", label: "$100,000 – $500,000" },
-  { value: "500k+", label: "$500,000+" },
-];
+import { INDUSTRY_OPTIONS, VOLUME_OPTIONS } from "@/lib/quote-options";
+import { submitQuote, type QuoteFormState } from "@/app/contact/actions";
 
 const STEPS = [
   "Tell us about your business",
@@ -35,11 +20,24 @@ const STEPS = [
   "You approve it, and we get you set up",
 ];
 
-export function QuoteExperience() {
-  const [submitted, setSubmitted] = React.useState(false);
-  const [fileName, setFileName] = React.useState<string | null>(null);
+const initialState: QuoteFormState = { status: "idle" };
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-  if (submitted) {
+export function QuoteExperience() {
+  const [fileName, setFileName] = React.useState<string | null>(null);
+  const [state, formAction, pending] = useActionState(submitQuote, initialState);
+
+  // Turnstile tokens are single-use; reset the widget after a failed attempt,
+  // but not for field-validation errors, since those never consume the token.
+  React.useEffect(() => {
+    if (state.status === "error" && !state.fieldErrors) {
+      (window as unknown as { turnstile?: { reset: () => void } }).turnstile?.reset();
+    }
+  }, [state]);
+
+  const fieldErrors = state.status === "error" ? state.fieldErrors : undefined;
+
+  if (state.status === "success") {
     return (
       <section className="px-6 py-24">
         <Container width="narrow" className="text-center">
@@ -63,6 +61,7 @@ export function QuoteExperience() {
 
   return (
     <section className="px-6 pb-24 pt-16">
+      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
       <Container>
         <div className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           {/* Left column */}
@@ -106,27 +105,23 @@ export function QuoteExperience() {
             <h2 className="font-display font-semibold text-ink-900" style={{ fontSize: 26 }}>
               Request your quote
             </h2>
-            <form
-              className="mt-6 flex flex-col gap-5"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSubmitted(true);
-              }}
-            >
-              <Input label="Business name" required placeholder="Saffron & Co" />
+            <form className="mt-6 flex flex-col gap-5" action={formAction}>
+              <Input label="Business name" name="business_name" required placeholder="Saffron & Co"
+                error={fieldErrors?.businessName} />
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <Select label="Industry" required options={INDUSTRY_OPTIONS} defaultValue="" />
-                <Select label="Monthly volume" required options={VOLUME_OPTIONS} defaultValue="" />
+                <Select label="Industry" name="industry" required options={INDUSTRY_OPTIONS} defaultValue="" />
+                <Select label="Monthly volume" name="monthly_volume" required options={VOLUME_OPTIONS} defaultValue="" />
               </div>
 
               <Input
                 label="Current processor"
+                name="current_processor"
                 placeholder="e.g. Square, Stripe, none yet"
                 hint="Optional — helps us beat your current rate"
               />
 
-              {/* File upload */}
+              {/* File upload — submitted as "statement" */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-ink-800">
                   Recent merchant statement (PDF, optional)
@@ -145,20 +140,45 @@ export function QuoteExperience() {
                   </span>
                   <input
                     type="file"
+                    name="statement"
                     accept="application/pdf,.pdf"
                     className="sr-only"
                     onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
                   />
                 </label>
+                {fieldErrors?.statement && (
+                  <span className="text-xs text-brick-500">{fieldErrors.statement}</span>
+                )}
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <Input label="Email" required type="email" placeholder="you@business.com" />
-                <Input label="Phone" type="tel" placeholder="(512) 555-0199" />
+                <Input label="Email" name="email" required type="email" placeholder="you@business.com"
+                  error={fieldErrors?.email} />
+                <Input label="Phone" name="phone" type="tel" placeholder="(512) 555-0199" />
               </div>
 
-              <Button type="submit" variant="primary" size="lg" block>
-                Request quote
+              {/* Honeypot — hidden from users, tempting to bots */}
+              <input
+                type="text"
+                name="company_website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute left-[-9999px] h-0 w-0 opacity-0"
+              />
+
+              {TURNSTILE_SITE_KEY && (
+                <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" />
+              )}
+
+              {state.status === "error" && (
+                <p aria-live="polite" className="text-[13.5px] font-medium text-brick-500">
+                  {state.message}
+                </p>
+              )}
+
+              <Button type="submit" variant="primary" size="lg" block disabled={pending}>
+                {pending ? "Sending…" : "Request quote"}
               </Button>
               <p className="text-center text-[12.5px] leading-snug text-ink-400">
                 No obligation. We'll never sell your info. Approval subject to underwriting.
