@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Wordmark } from "./wordmark";
 import { PRODUCTS, SOLUTIONS, footerProductKeys, footerSolutionKeys } from "@/lib/data";
 
@@ -85,12 +86,13 @@ export function SiteFooter() {
               <br />
               Austin, TX 78754
             </p>
-            <div
-              className="mt-5 inline-flex items-center gap-2.5 rounded-pill border border-white/10 px-3 py-2"
+            <Link
+              href="/chamber"
+              className="group mt-5 inline-flex items-center gap-2.5 rounded-pill border border-white/10 py-2 pl-2.5 pr-3.5 transition-colors hover:bg-[rgba(243,235,222,0.14)]"
               style={{ background: "rgba(243,235,222,0.06)" }}
             >
               <span
-                className="h-[22px] w-[22px] rounded-round"
+                className="h-[22px] w-[22px] shrink-0 rounded-round"
                 style={{
                   background:
                     "conic-gradient(#E4572E, #E0A04D, #E8C34A, #5E9E6E, #4A79B8, #7E5AA2, #E4572E)",
@@ -102,7 +104,13 @@ export function SiteFooter() {
                 <br />
                 <strong className="font-semibold text-[#F3EBDE]">Austin LGBT Chamber of Commerce</strong>
               </span>
-            </div>
+              <ArrowRight
+                size={15}
+                strokeWidth={2}
+                aria-hidden
+                className="shrink-0 text-[rgba(243,235,222,0.55)] transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
             <div className="mt-5 flex gap-2.5">
               {SOCIALS.map((s) => (
                 <a

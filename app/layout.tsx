@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Newsreader, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -58,6 +59,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        {/* HubSpot live chat — loaded on every route via the root layout */}
+        <Script
+          id="hs-script-loader"
+          src="https://js-na2.hs-scripts.com/246692701.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
