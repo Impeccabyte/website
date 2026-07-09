@@ -121,7 +121,7 @@ export function QuoteExperience() {
                 hint="Optional — helps us beat your current rate"
               />
 
-              {/* File upload (visual only for now — not submitted) */}
+              {/* File upload — submitted as "statement" */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-ink-800">
                   Recent merchant statement (PDF, optional)
@@ -140,11 +140,15 @@ export function QuoteExperience() {
                   </span>
                   <input
                     type="file"
+                    name="statement"
                     accept="application/pdf,.pdf"
                     className="sr-only"
                     onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
                   />
                 </label>
+                {fieldErrors?.statement && (
+                  <span className="text-xs text-brick-500">{fieldErrors.statement}</span>
+                )}
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
