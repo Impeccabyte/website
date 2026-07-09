@@ -27,9 +27,10 @@ export function QuoteExperience() {
   const [fileName, setFileName] = React.useState<string | null>(null);
   const [state, formAction, pending] = useActionState(submitQuote, initialState);
 
-  // Turnstile tokens are single-use; reset the widget after a failed attempt.
+  // Turnstile tokens are single-use; reset the widget after a failed attempt,
+  // but not for field-validation errors, since those never consume the token.
   React.useEffect(() => {
-    if (state.status === "error") {
+    if (state.status === "error" && !state.fieldErrors) {
       (window as unknown as { turnstile?: { reset: () => void } }).turnstile?.reset();
     }
   }, [state]);
