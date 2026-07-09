@@ -42,6 +42,15 @@ PRIVATE file in HubSpot, attach it to the Deal, and advance that Deal to the
 - **Body limit:** raise Next.js server-action `bodySizeLimit` to `10mb` (default
   is 1 MB).
 
+## Prerequisite (one-time, HubSpot UI)
+
+The Service Key created for the base integration must be granted the **`files`**
+scope (the Files API returns `403 MISSING_SCOPES` without it — required granular
+scopes: `files`). Edit the Service Key in Settings → Integrations → Service Keys,
+add `files`, and save. No code or `.env` change needed. The base scopes
+(`crm.objects.contacts.*`, `crm.objects.deals.*`, `crm.schemas.deals.write`)
+remain.
+
 ## Architecture
 
 Extend the existing three layers; no new files except tests already present.
