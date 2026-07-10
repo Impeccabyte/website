@@ -124,6 +124,11 @@ const DS_CSS = `
   transition:border-color .14s, box-shadow .14s; }
 .ib-in:hover{ border-color:var(--ink-300); }
 .ib-in:focus{ border-color:var(--clay-500); box-shadow:0 0 0 3px rgba(192,98,62,.15); }
+select.ib-in{ -webkit-appearance:none; -moz-appearance:none; appearance:none; line-height:1.3;
+  background-color:var(--white); cursor:pointer; padding-right:32px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239B8E7E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 11px center; background-size:14px 14px; }
+select.ib-in::-ms-expand{ display:none; }
 .ib-btn{ font-family:var(--font-sans); font-weight:600; font-size:14px; border-radius:var(--radius-pill); cursor:pointer;
   border:1.5px solid transparent; padding:9px 18px; transition:background-color .14s,border-color .14s,transform .14s,box-shadow .22s; }
 .ib-btn:active{ transform:translateY(.5px) scale(.985); }
