@@ -26,6 +26,35 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 export function QuoteExperience() {
   const [fileName, setFileName] = React.useState<string | null>(null);
   const [state, formAction, pending] = useActionState(submitQuote, initialState);
+  const turnstileWrapRef = React.useRef<HTMLDivElement>(null);
+
+  // The Turnstile widget is a fixed ~300px iframe that can't shrink. On a phone
+  // the form column is narrower than that, so left unchecked it drags the whole
+  // grid — hero copy included — wider than the viewport. The wrapper's
+  // `overflow-hidden` decouples the widget from the column's min-content sizing;
+  // here we scale the widget itself down to fit whatever width it's given.
+  React.useEffect(() => {
+    const wrap = turnstileWrapRef.current;
+    if (!wrap) return;
+    const fit = () => {
+      const widget = wrap.querySelector<HTMLElement>(".cf-turnstile");
+      if (!widget) return;
+      const natural = widget.offsetWidth || 300; // layout width, unaffected by transform
+      const avail = wrap.clientWidth;
+      widget.style.transformOrigin = "left top";
+      widget.style.transform = avail < natural ? `scale(${avail / natural})` : "";
+      widget.style.marginBottom = avail < natural ? `${-(natural - avail) * 0.22}px` : "";
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(wrap);
+    const mo = new MutationObserver(fit);
+    mo.observe(wrap, { childList: true, subtree: true });
+    return () => {
+      ro.disconnect();
+      mo.disconnect();
+    };
+  }, []);
 
   // Turnstile tokens are single-use; reset the widget after a failed attempt,
   // but not for field-validation errors, since those never consume the token.
@@ -65,7 +94,7 @@ export function QuoteExperience() {
       <Container>
         <div className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           {/* Left column */}
-          <div>
+          <div className="min-w-0">
             <Eyebrow>Get a quote</Eyebrow>
             <h1 className="mt-4 font-display font-semibold text-ink-900" style={{ fontSize: "clamp(32px,4vw,48px)", lineHeight: 1.05 }}>
               See your rate in one business day.
@@ -101,7 +130,7 @@ export function QuoteExperience() {
           </div>
 
           {/* Right column — form */}
-          <Card elevation="raised" padding="none" className="p-7 sm:p-8">
+          <Card elevation="raised" padding="none" className="min-w-0 p-7 sm:p-8">
             <h2 className="font-display font-semibold text-ink-900" style={{ fontSize: 26 }}>
               Request your quote
             </h2>
@@ -168,7 +197,9 @@ export function QuoteExperience() {
               />
 
               {TURNSTILE_SITE_KEY && (
-                <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" />
+                <div ref={turnstileWrapRef} className="overflow-hidden">
+                  <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" />
+                </div>
               )}
 
               {state.status === "error" && (
