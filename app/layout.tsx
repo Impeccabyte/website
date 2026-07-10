@@ -4,6 +4,8 @@ import Script from "next/script";
 import "./globals.css";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { JsonLd } from "@/components/seo/json-ld";
+import { orgSchema } from "@/lib/seo/org";
 
 const newsreader = Newsreader({
   subsets: ["latin"],
@@ -59,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        <JsonLd data={orgSchema()} />
         {/* HubSpot live chat — loaded on every route via the root layout */}
         <Script
           id="hs-script-loader"
