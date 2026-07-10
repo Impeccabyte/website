@@ -19,5 +19,5 @@ export function sitemapPaths(): string[] {
     ...productOrder.map((k) => `/products/${k}`),
     ...solutionNavOrder.map((k) => `/industries/${k}`),
   ];
-  return [...new Set(paths)].map((p) => `${SITE_URL}${p === "/" ? "/" : p}`);
+  return [...new Set(paths)].map((p) => `${SITE_URL}${p}`);
 }
