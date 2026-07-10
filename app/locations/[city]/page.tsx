@@ -10,6 +10,8 @@ import { getCity, citySlugs, cityCanonical, cityJsonLdNodes } from "@/lib/seo/lo
 import { PRODUCTS, SOLUTIONS } from "@/lib/data";
 import { ogImages } from "@/lib/og/meta";
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return citySlugs().map((city) => ({ city }));
 }
@@ -46,8 +48,8 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
             Merchant Services in <span className="em">{c.name}, TX</span>.
           </h1>
           <div className="mt-5 max-w-[620px] space-y-4 text-[18px] leading-relaxed text-ink-600">
-            {c.intro.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
+            {c.intro.map((p, i) => (
+              <p key={i}>{p}</p>
             ))}
           </div>
           <div className="mt-8">
