@@ -6,6 +6,10 @@ describe("CITIES", () => {
     expect(citySlugs().sort()).toEqual(["austin", "dallas", "san-antonio"]);
   });
 
+  it("exposes the same cities via the CITIES map", () => {
+    expect(Object.keys(CITIES).sort()).toEqual(["austin", "dallas", "san-antonio"]);
+  });
+
   it("gives each city a unique metaTitle and >=4 FAQs", () => {
     const titles = citySlugs().map((s) => getCity(s)!.metaTitle);
     expect(new Set(titles).size).toBe(3);
