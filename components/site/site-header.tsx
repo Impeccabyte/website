@@ -43,6 +43,7 @@ export function SiteHeader() {
           <MegaTrigger label="Industries" active={mega === "industries"} onOpen={() => setMega("industries")} />
           <NavLink href="/partnerships" onEnter={() => setMega(null)}>Partnerships</NavLink>
           <NavLink href="/pricing" onEnter={() => setMega(null)}>Pricing</NavLink>
+          <NavLink href="/locations" onEnter={() => setMega(null)}>Locations</NavLink>
           <NavLink href="/about" onEnter={() => setMega(null)}>About</NavLink>
         </nav>
 
@@ -295,6 +296,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
 
         <DrawerRow href="/partnerships" onClose={onClose}>Partnerships</DrawerRow>
         <DrawerRow href="/pricing" onClose={onClose}>Pricing</DrawerRow>
+        <DrawerRow href="/locations" onClose={onClose}>Locations</DrawerRow>
         <DrawerRow href="/about" onClose={onClose}>About</DrawerRow>
 
         <div className="mt-6 flex flex-col gap-2.5">
