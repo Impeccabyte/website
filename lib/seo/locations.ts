@@ -1,4 +1,4 @@
-import type { ProductKey, SolutionKey } from "@/lib/data";
+import type { ProductKey, SolutionKey, PriorityZoneKey } from "@/lib/data";
 import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 import type { JsonLd } from "@/lib/seo/org";
 
@@ -21,6 +21,8 @@ export type City = {
   verticals: string[];
   /** Lede above the neighborhood pills on the city page. */
   serveIntro: string;
+  /** Which Priority Support on-site zone this metro falls into. */
+  zone: PriorityZoneKey;
   intro: string[];
   wedge: string;
   products: ProductKey[];
@@ -42,6 +44,7 @@ export const CITIES: Record<string, City> = {
     districts: ["Downtown & 2nd Street", "East Austin", "South Congress (SoCo)", "The Domain", "Rainey Street", "Mueller"],
     verticals: ["Startups & funded DTC brands", "Food & beverage", "High-risk retail (CBD, hemp, vape)", "Boutiques & specialty retail"],
     serveIntro: "We work with Austin businesses across these neighborhoods:",
+    zone: "in-range",
     intro: [
       "Impeccabyte is headquartered in Austin — our team works out of 1606 Headway Circle in the Tech Ridge corridor of North Austin — so the merchants we serve here are also our neighbors.",
       "From food trailers and full-service kitchens on Rainey Street to DTC brands scaling out of The Domain and CBD shops along East Austin, we board Austin businesses on transparent interchange-plus pricing with next-day funding that keeps pace with a fast-moving city.",
@@ -70,6 +73,7 @@ export const CITIES: Record<string, City> = {
     districts: ["Deep Ellum", "Bishop Arts District", "Uptown & Victory Park", "Fort Worth Stockyards", "Frisco & Plano", "Las Colinas"],
     verticals: ["E-commerce & DTC brands", "Professional & B2B services", "Retail & showrooms"],
     serveIntro: "We work with Dallas–Fort Worth businesses across these areas:",
+    zone: "drivable",
     intro: [
       "Dallas–Fort Worth is one of the largest, most competitive merchant markets in the country, and Impeccabyte serves it as a dedicated payments partner — remotely and on-site as needed — from our Austin base.",
       "We work with DFW e-commerce and DTC brands shipping out of Frisco and Plano, professional and B2B service firms across Uptown and Las Colinas, and retailers from Bishop Arts to the Fort Worth Stockyards, pairing interchange-plus pricing with the checkout and invoicing tools those businesses actually run on.",
@@ -97,6 +101,7 @@ export const CITIES: Record<string, City> = {
     districts: ["The Pearl", "The River Walk", "Southtown", "Alamo Heights", "Stone Oak", "Downtown"],
     verticals: ["Hospitality & tourism", "Healthcare & personal care", "Retail", "Military-adjacent businesses"],
     serveIntro: "We work with San Antonio businesses across these areas:",
+    zone: "in-range",
     intro: [
       "San Antonio's economy runs on hospitality, healthcare, and the steady rhythm of a major military community, and Impeccabyte serves the metro's merchants as a payments partner from our Austin base — an easy drive down I-35 when on-site support helps.",
       "We board River Walk and Pearl restaurants, Southtown boutiques, Stone Oak and Alamo Heights clinics and personal-care studios, and the small businesses that serve the JBSA community, with interchange-plus pricing and point-of-sale and recurring-billing tools suited to each.",

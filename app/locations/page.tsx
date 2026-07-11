@@ -6,6 +6,7 @@ import { Eyebrow } from "@/components/ui/eyebrow";
 import { Card } from "@/components/ui/card";
 import { IconChip } from "@/components/ui/icon-chip";
 import { DarkCTA } from "@/components/site/dark-cta";
+import { PrioritySupportSection } from "@/components/site/priority-support";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema } from "@/lib/seo/schema";
 import { citySlugs, getCity } from "@/lib/seo/locations";
@@ -41,11 +42,12 @@ export default function LocationsHubPage() {
             className="mt-3.5 font-display font-semibold text-ink-900"
             style={{ fontSize: "clamp(36px, 4.8vw, 56px)", lineHeight: 1.04 }}
           >
-            Merchant services <span className="em">across Texas.</span>
+            Merchant services, <span className="em">coast to coast.</span>
           </h1>
           <p className="mx-auto mt-[18px] max-w-[560px] text-[18px] leading-relaxed text-ink-600">
-            We&rsquo;re based in Austin and serve merchants statewide — on-site where we can, remotely
-            everywhere else, always with transparent interchange-plus pricing and a real team behind you.
+            We&rsquo;re proudly based in Austin and serve merchants across the United States — on-site
+            around central Texas, remotely everywhere else, always with transparent interchange-plus
+            pricing and a real team behind you.
           </p>
         </Container>
       </section>
@@ -86,10 +88,12 @@ export default function LocationsHubPage() {
         </Container>
       </section>
 
+      <PrioritySupportSection />
+
       <DarkCTA
         titleA="Not on the list? We still"
         titleEm="have you."
-        body="We serve businesses across Texas and beyond. Tell us where you are and we'll build a quote that fits."
+        body="We serve businesses nationwide, with a home-team feel from Austin. Tell us where you are and we'll build a quote that fits."
         primary={{ label: "Get a Quote", href: "/contact" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />

@@ -10,9 +10,10 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { DarkCTA } from "@/components/site/dark-cta";
 import { TiltPanel } from "@/components/site/tilt-panel";
 import { LocationGraphic } from "@/components/graphics/location-graphic";
+import { PriorityZonePanel } from "@/components/site/priority-zone-panel";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCity, citySlugs, cityCanonical, cityJsonLdNodes } from "@/lib/seo/locations";
-import { PRODUCTS, SOLUTIONS } from "@/lib/data";
+import { PRODUCTS, SOLUTIONS, PRIORITY } from "@/lib/data";
 import { ogImages } from "@/lib/og/meta";
 
 export const dynamicParams = false;
@@ -215,6 +216,13 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
 
       {/* Local proof — ⚠️ WRITE: replace with a real, approved testimonial from a merchant in this metro.
           Do NOT invent testimonials. Until then, this section renders nothing. */}
+
+      {/* Priority Support — on-site terms scoped to this metro's zone */}
+      <section className="pt-16 pb-4">
+        <Container>
+          <PriorityZonePanel zone={PRIORITY.zones[c.zone]} />
+        </Container>
+      </section>
 
       {/* FAQ (mirrors FAQPage JSON-LD) */}
       <section className="pt-16 pb-4">
