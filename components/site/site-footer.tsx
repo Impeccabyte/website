@@ -137,7 +137,6 @@ export function SiteFooter() {
                 { label: "Pricing", href: "/pricing" },
                 { label: "Locations", href: "/locations" },
                 { label: "Get a Quote", href: "/contact" },
-                { label: "Contact", href: "/contact" },
               ]}
             />
           </div>
