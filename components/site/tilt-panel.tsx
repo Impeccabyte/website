@@ -19,11 +19,15 @@ export function TiltPanel({
   gradient,
   className,
   interactive = true,
+  bare = false,
 }: {
   children: React.ReactNode;
   gradient: string;
   className?: string;
   interactive?: boolean;
+  /** Drop the panel chrome (border, card padding, shadow, fixed min-height) —
+   *  the graphic floats directly on the gradient glow. Fit + tilt still apply. */
+  bare?: boolean;
 }) {
   const panelRef = React.useRef<HTMLDivElement>(null);
   const tiltRef = React.useRef<HTMLDivElement>(null);
@@ -84,7 +88,10 @@ export function TiltPanel({
     <div
       ref={panelRef}
       className={cn(
-        "relative flex min-h-[392px] items-center justify-center overflow-hidden rounded-lg border border-border-default p-8 shadow-sm",
+        "relative flex items-center justify-center overflow-hidden rounded-lg",
+        bare
+          ? "min-h-[340px] p-4"
+          : "min-h-[392px] border border-border-default p-8 shadow-sm",
         className
       )}
       style={{ background: gradient, perspective: "1000px" }}

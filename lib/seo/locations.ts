@@ -5,9 +5,22 @@ import type { JsonLd } from "@/lib/seo/org";
 export type City = {
   slug: string;
   name: string;
+  /** Metro label, e.g. "Austin" or "Dallas–Fort Worth". */
   metro: string;
+  /** Region label shown in eyebrows / hub cards, e.g. "Austin, TX". */
+  region: string;
+  /** True only for Austin — our real, physical office. Drives the "Home base" badge. */
+  hasOffice: boolean;
+  /** One-line hub-card tagline. */
+  tagline: string;
+  /** Hub-card footer line summarizing the verticals we serve. */
+  cardLine: string;
+  /** Neighborhoods / areas we serve, rendered as pills. */
   districts: string[];
+  /** Verticals we have particular depth in, rendered as a checklist. */
   verticals: string[];
+  /** Lede above the neighborhood pills on the city page. */
+  serveIntro: string;
   intro: string[];
   wedge: string;
   products: ProductKey[];
@@ -22,8 +35,13 @@ export const CITIES: Record<string, City> = {
     slug: "austin",
     name: "Austin",
     metro: "Austin",
-    districts: ["Downtown & the 2nd Street District", "East Austin", "South Congress (SoCo)", "The Domain", "Rainey Street", "Mueller"],
-    verticals: ["startups & funded DTC brands", "food & beverage", "high-risk retail (CBD, hemp, vape)", "boutiques & specialty retail"],
+    region: "Austin, TX",
+    hasOffice: true,
+    tagline: "Our home base — on-site or remote, we're your neighbors.",
+    cardLine: "Startups & DTC, food & beverage, high-risk retail",
+    districts: ["Downtown & 2nd Street", "East Austin", "South Congress (SoCo)", "The Domain", "Rainey Street", "Mueller"],
+    verticals: ["Startups & funded DTC brands", "Food & beverage", "High-risk retail (CBD, hemp, vape)", "Boutiques & specialty retail"],
+    serveIntro: "We work with Austin businesses across these neighborhoods:",
     intro: [
       "Impeccabyte is headquartered in Austin — our team works out of 1606 Headway Circle in the Tech Ridge corridor of North Austin — so the merchants we serve here are also our neighbors.",
       "From food trailers and full-service kitchens on Rainey Street to DTC brands scaling out of The Domain and CBD shops along East Austin, we board Austin businesses on transparent interchange-plus pricing with next-day funding that keeps pace with a fast-moving city.",
@@ -45,8 +63,13 @@ export const CITIES: Record<string, City> = {
     slug: "dallas",
     name: "Dallas",
     metro: "Dallas–Fort Worth",
-    districts: ["Deep Ellum", "Bishop Arts District", "Uptown & Victory Park", "the Fort Worth Stockyards", "Frisco & Plano", "Las Colinas"],
-    verticals: ["e-commerce & DTC brands", "professional & B2B services", "retail & showrooms"],
+    region: "Dallas–Fort Worth",
+    hasOffice: false,
+    tagline: "A dedicated payments partner for DFW e-commerce, B2B, and retail.",
+    cardLine: "E-commerce & DTC, professional & B2B services, retail",
+    districts: ["Deep Ellum", "Bishop Arts District", "Uptown & Victory Park", "Fort Worth Stockyards", "Frisco & Plano", "Las Colinas"],
+    verticals: ["E-commerce & DTC brands", "Professional & B2B services", "Retail & showrooms"],
+    serveIntro: "We work with Dallas–Fort Worth businesses across these areas:",
     intro: [
       "Dallas–Fort Worth is one of the largest, most competitive merchant markets in the country, and Impeccabyte serves it as a dedicated payments partner — remotely and on-site as needed — from our Austin base.",
       "We work with DFW e-commerce and DTC brands shipping out of Frisco and Plano, professional and B2B service firms across Uptown and Las Colinas, and retailers from Bishop Arts to the Fort Worth Stockyards, pairing interchange-plus pricing with the checkout and invoicing tools those businesses actually run on.",
@@ -67,8 +90,13 @@ export const CITIES: Record<string, City> = {
     slug: "san-antonio",
     name: "San Antonio",
     metro: "San Antonio",
-    districts: ["the Pearl", "the River Walk", "Southtown", "Alamo Heights", "Stone Oak", "downtown"],
-    verticals: ["hospitality & tourism", "healthcare & personal care", "retail", "military-adjacent businesses"],
+    region: "San Antonio, TX",
+    hasOffice: false,
+    tagline: "Payments for hospitality, healthcare, and retail — a drive down I-35.",
+    cardLine: "Hospitality & tourism, healthcare, retail, military-adjacent",
+    districts: ["The Pearl", "The River Walk", "Southtown", "Alamo Heights", "Stone Oak", "Downtown"],
+    verticals: ["Hospitality & tourism", "Healthcare & personal care", "Retail", "Military-adjacent businesses"],
+    serveIntro: "We work with San Antonio businesses across these areas:",
     intro: [
       "San Antonio's economy runs on hospitality, healthcare, and the steady rhythm of a major military community, and Impeccabyte serves the metro's merchants as a payments partner from our Austin base — an easy drive down I-35 when on-site support helps.",
       "We board River Walk and Pearl restaurants, Southtown boutiques, Stone Oak and Alamo Heights clinics and personal-care studios, and the small businesses that serve the JBSA community, with interchange-plus pricing and point-of-sale and recurring-billing tools suited to each.",
