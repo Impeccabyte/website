@@ -10,6 +10,8 @@ import { Accordion } from "@/components/ui/accordion";
 import { CheckItem, SectionIntro } from "@/components/site/bits";
 import { DarkCTA } from "@/components/site/dark-cta";
 import { RateCalculator } from "@/components/pricing/rate-calculator";
+import { JsonLd } from "@/components/seo/json-ld";
+import { faqSchema } from "@/lib/seo/schema";
 import { pricingTiers, accountIncludes, faqItems } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -28,6 +30,8 @@ const EXPLAINER = [
 export default function PricingPage() {
   return (
     <>
+      <JsonLd data={faqSchema(faqItems)} />
+
       {/* Hero */}
       <section className="px-6 pt-16 pb-12">
         <Container width="narrow" className="text-center">
