@@ -47,6 +47,14 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2.5">
+          <a
+            href="https://dash.impeccabyte.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden rounded-pill px-3 py-2 text-[15px] font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-900 md:inline-flex"
+          >
+            Sign In
+          </a>
           <ButtonLink href="/contact" variant="primary" size="sm">
             Get a Quote
           </ButtonLink>
@@ -298,6 +306,15 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
         <DrawerRow href="/about" onClose={onClose}>About</DrawerRow>
 
         <div className="mt-6 flex flex-col gap-2.5">
+          <a
+            href="https://dash.impeccabyte.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            className="rounded-pill py-3.5 text-center text-[17px] font-semibold text-ink-900"
+          >
+            Sign In
+          </a>
           <ButtonLink href="/contact" variant="primary" size="lg" block onClick={onClose}>
             Get a Quote
           </ButtonLink>
