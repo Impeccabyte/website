@@ -4,6 +4,7 @@ import {
   ShoppingBag, Utensils, Briefcase, ShoppingCart, Heart, ShieldAlert, Handshake,
   Nfc, Zap, Smartphone, Terminal, Clock, LayoutTemplate, ShieldCheck, Wallet,
   FileText, Bell, Users, Save, Receipt, Percent, Webhook,
+  Timer, PhoneCall, FileSearch, Home, Car, MapPin, CalendarCheck, Video, Plane,
 } from "lucide-react";
 
 export type Feature = { icon: LucideIcon; title: string; body: string };
@@ -449,3 +450,89 @@ export const calcBase: Record<"inperson" | "online" | "mixed", number> = {
 };
 export const calcPresets = [5000, 15000, 50000, 150000, 500000, 1000000, 2000000];
 export const calcPresetLabels = ["$5K", "$15K", "$50K", "$150K", "$500K", "$1M", "$2M+"];
+
+/* ---- Priority Support (paid support tier surfaced on the Locations pages) ---- */
+export type PriorityZoneKey = "in-range" | "drivable" | "out-of-state";
+
+export type PriorityPoint = { icon: LucideIcon; text: string };
+
+export type PriorityZone = {
+  tag: string;
+  stat: string;
+  statLabel: string;
+  headline: string;
+  sub: string;
+  points: PriorityPoint[];
+};
+
+export type PriorityCore = { icon: LucideIcon; title: string; body: string };
+
+export const PRIORITY: {
+  price: string;
+  period: string;
+  annual: string;
+  core: PriorityCore[];
+  zones: Record<PriorityZoneKey, PriorityZone>;
+} = {
+  price: "$99",
+  period: "per month",
+  annual: "or $1,080 / year — one month free",
+  core: [
+    {
+      icon: Timer,
+      title: "Front-of-line support, with a real SLA",
+      body: "Same-business-day response and a next-day resolution target — not best-effort.",
+    },
+    {
+      icon: PhoneCall,
+      title: "A dedicated direct line",
+      body: "Reach a real person who knows your account, instead of the general queue.",
+    },
+    {
+      icon: FileSearch,
+      title: "Proactive statement re-audits",
+      body: "We catch interchange downgrades and processor rate changes before they reach you.",
+    },
+  ],
+  zones: {
+    "in-range": {
+      tag: "In our service area",
+      stat: "Free",
+      statLabel: "on-site, as needed",
+      headline: "On-site help is already free here",
+      sub: "You're in our home range, so we come to your counter as needed at no charge. Priority Support simply adds the remote SLA, direct line, and re-audits on top.",
+      points: [
+        { icon: Home, text: "On-site visits included free, as needed" },
+        { icon: Timer, text: "Same-business-day remote response" },
+        { icon: FileSearch, text: "Proactive statement re-audits" },
+      ],
+    },
+    drivable: {
+      tag: "Drivable from Austin",
+      stat: "2 visits",
+      statLabel: "on-site / year, included",
+      headline: "Two on-site visits a year, included",
+      sub: "We'll make the drive — up to two on-site visits a year come with the tier, additional visits are $300 each, and you get quarterly business reviews to keep your pricing honest.",
+      points: [
+        { icon: Car, text: "Up to 2 on-site visits / year included" },
+        { icon: MapPin, text: "Additional visits $300 each" },
+        { icon: CalendarCheck, text: "Quarterly business reviews" },
+      ],
+    },
+    "out-of-state": {
+      tag: "Anywhere else",
+      stat: "Monthly",
+      statLabel: "virtual business reviews",
+      headline: "Monthly reviews, priority remote",
+      sub: "On-site is swapped for monthly virtual business reviews — more of our time, just remotely. Want someone on the ground? We arrange it à la carte at travel cost plus a $300 day rate.",
+      points: [
+        { icon: Video, text: "Monthly virtual business reviews" },
+        { icon: Timer, text: "Priority remote support & SLA" },
+        { icon: Plane, text: "On-site à la carte, quoted per trip" },
+      ],
+    },
+  },
+};
+
+/** Fixed display order for the three zone cards on the Locations hub. */
+export const priorityZoneOrder: PriorityZoneKey[] = ["in-range", "drivable", "out-of-state"];
