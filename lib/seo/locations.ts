@@ -59,7 +59,7 @@ export const CITIES: Record<string, City> = {
       { q: "What does it cost to switch processors?", a: "Nothing to look. We start with a free statement analysis and only recommend switching if we can genuinely beat what you pay now — there's no switching fee from us." },
       { q: "How fast are payouts?", a: "Next-day funding is available for qualifying Austin accounts, so your deposits keep pace with day-to-day cash flow." },
     ],
-    metaTitle: "Merchant Services in Austin, TX — Credit Card Processing | Impeccabyte",
+    metaTitle: "Merchant Services in Austin, TX — Credit Card Processing",
     metaDescription: "Austin-based merchant services with transparent interchange-plus pricing, next-day funding, and high-risk approvals for CBD, food & beverage, and DTC brands.",
   },
   dallas: {
@@ -87,7 +87,7 @@ export const CITIES: Record<string, City> = {
       { q: "How do you price B2B and professional services in DFW?", a: "On transparent interchange-plus, with invoicing and card-on-file tools built for higher-ticket, net-terms billing common to Dallas professional-services firms." },
       { q: "Can you help a Dallas business lower its effective rate?", a: "Often, yes. Our free statement analysis compares your current effective rate against interchange-plus and flags junk fees — with no switching fee to move." },
     ],
-    metaTitle: "Merchant Services in Dallas, TX — Credit Card Processing | Impeccabyte",
+    metaTitle: "Merchant Services for Dallas–Fort Worth — Credit Card Processing",
     metaDescription: "Merchant services for Dallas–Fort Worth e-commerce, B2B, and retail — transparent interchange-plus pricing, multi-channel checkout, and a free statement analysis.",
   },
   "san-antonio": {
@@ -115,7 +115,7 @@ export const CITIES: Record<string, City> = {
       { q: "Can you handle recurring billing for a San Antonio clinic or studio?", a: "Yes. We support card-on-file and recurring billing for healthcare and personal-care businesses across Stone Oak and Alamo Heights, with compliant storage of payment details." },
       { q: "What does a rate review cost?", a: "Nothing. We start with a free statement analysis for any San Antonio business and only recommend a switch if we can beat your current pricing — no switching fee." },
     ],
-    metaTitle: "Merchant Services in San Antonio, TX — Credit Card Processing | Impeccabyte",
+    metaTitle: "Merchant Services for San Antonio, TX — Credit Card Processing",
     metaDescription: "Merchant services for San Antonio hospitality, healthcare, and retail — interchange-plus pricing, POS and recurring billing, and a free, no-obligation statement analysis.",
   },
 };

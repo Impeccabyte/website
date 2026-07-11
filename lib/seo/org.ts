@@ -19,7 +19,8 @@ export const AUSTIN_ADDRESS = {
 
 // ⚠️ CONFIRM — fill before launch. Leave null to omit from JSON-LD (never emit a fake value).
 // TELEPHONE must match the Google Business Profile exactly, e.g. "+1-512-555-0100".
-export const TELEPHONE: string | null = null;
+// Mirrors the tel: link in components/site/site-footer.tsx (+15129806236).
+export const TELEPHONE: string | null = "+1-512-980-6236";
 // GEO is the Austin office lat/lng, e.g. { latitude: "30.401", longitude: "-97.699" }.
 export const GEO: { latitude: string; longitude: string } | null = null;
 
