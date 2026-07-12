@@ -64,6 +64,17 @@ export function QuoteExperience() {
     }
   }, [state]);
 
+  // Push a GA4 conversion event to the GTM dataLayer once the quote is
+  // submitted. The form uses a React server action rather than a native POST,
+  // so GTM's built-in Form Submit trigger can't see it reliably — this gives
+  // the container an explicit `quote_form_submit` event to build the tag on.
+  React.useEffect(() => {
+    if (state.status !== "success") return;
+    const w = window as unknown as { dataLayer?: Record<string, unknown>[] };
+    w.dataLayer = w.dataLayer || [];
+    w.dataLayer.push({ event: "quote_form_submit", form_id: "quote-request-form" });
+  }, [state]);
+
   const fieldErrors = state.status === "error" ? state.fieldErrors : undefined;
 
   if (state.status === "success") {
