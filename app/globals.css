@@ -280,6 +280,28 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 }
 
 /* ============================================================
+   Legal "On this page" nav — the sticky TOC is height-capped to the
+   viewport and scrolls independently when a policy has many sections.
+   Give it a slim, unobtrusive scrollbar so the overflow reads as
+   intentional rather than a default OS bar.
+   ============================================================ */
+.legal-toc-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+  scrollbar-gutter: stable;
+}
+.legal-toc-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.legal-toc-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--border-default);
+  border-radius: 9999px;
+}
+.legal-toc-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================================
    Legal documents — typography for the HTML that GetTerms injects
    into `.legal-doc` at runtime. Unlayered so it wins over the
    @layer base heading defaults; scoped so it only touches the

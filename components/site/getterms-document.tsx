@@ -188,11 +188,14 @@ export function GetTermsDocument({
     <section className="mx-auto max-w-[1120px] px-6 pb-24 pt-14">
       <div className="grid grid-cols-1 items-start gap-14 md:grid-cols-[230px_1fr]">
         {/* On-page navigation */}
-        <nav aria-label="On this page" className="sticky top-24 hidden md:block">
-          <p className="mb-3.5 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-400">
+        <nav
+          aria-label="On this page"
+          className="sticky top-24 hidden max-h-[calc(100vh-7rem)] flex-col md:flex"
+        >
+          <p className="mb-3.5 flex-none text-[11px] font-bold uppercase tracking-[0.12em] text-ink-400">
             On this page
           </p>
-          <div className="flex flex-col gap-0.5 border-l border-border-default">
+          <div className="legal-toc-scroll flex min-h-0 flex-col gap-0.5 overflow-y-auto border-l border-border-default pr-2">
             {toc.length === 0 ? (
               <span className="py-1.5 pl-4 text-[14px] text-ink-400">
                 {status === "error" ? "Unavailable" : "Loading…"}
