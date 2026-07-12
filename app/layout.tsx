@@ -58,43 +58,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${newsreader.variable} ${hanken.variable} ${jetbrains.variable}`}>
       <body>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-5DNCR8N2"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
         <JsonLd data={orgSchema()} />
 
-        {/*
-          GetTerms CMP — consent gate. The blocker is a YETT-based script that
-          patches document.createElement + a MutationObserver to hold trackers
-          until consent; it MUST run before any tracker, so it loads
-          `beforeInteractive` (Next injects it into <head> ahead of hydration).
-          The widget renders the banner UI and can load after interactive.
-        */}
-        <Script
-          id="getterms-blocker"
-          src="https://gettermscmp.com/cookie-consent/blocker/2cad461f-5d39-4d4c-8692-e80ee8e0e657/en-us?auto=true"
-          strategy="beforeInteractive"
-        />
-        <Script
-          id="getterms-widget"
-          src="https://gettermscmp.com/cookie-consent/widget/2cad461f-5d39-4d4c-8692-e80ee8e0e657/en-us?auto=true"
-          strategy="afterInteractive"
-        />
-
-        {/*
-          HubSpot tracking + live chat (portal 246692701). Rendered PRE-BLOCKED:
-          `type="text/plain"` keeps the browser from executing/fetching it, and
-          `data-getterms-statistics` categorizes it as analytics — the GetTerms
-          blocker restores it (via __GT_UNBLOCK) only once the visitor grants
-          statistics/analytics consent. Do NOT switch this to next/script: it must
-          stay an inert text/plain tag so consent, not Next's loader, gates it.
-        */}
-        <script
-          id="hs-script-loader"
-          type="text/plain"
-          data-getterms-statistics=""
-          src="https://js-na2.hs-scripts.com/246692701.js"
-        />
+        {/* Google Tag Manager — loads the container on every route. HubSpot,
+            consent, and any other tags are managed inside GTM (container
+            GTM-5DNCR8N2), not in this codebase. */}
+        <Script id="gtm" strategy="afterInteractive">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5DNCR8N2');`}
+        </Script>
       </body>
     </html>
   );
