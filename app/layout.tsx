@@ -62,11 +62,38 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <SiteFooter />
         <JsonLd data={orgSchema()} />
-        {/* HubSpot live chat — loaded on every route via the root layout */}
+
+        {/*
+          GetTerms CMP — consent gate. The blocker is a YETT-based script that
+          patches document.createElement + a MutationObserver to hold trackers
+          until consent; it MUST run before any tracker, so it loads
+          `beforeInteractive` (Next injects it into <head> ahead of hydration).
+          The widget renders the banner UI and can load after interactive.
+        */}
         <Script
+          id="getterms-blocker"
+          src="https://gettermscmp.com/cookie-consent/blocker/2cad461f-5d39-4d4c-8692-e80ee8e0e657/en-us?auto=true"
+          strategy="beforeInteractive"
+        />
+        <Script
+          id="getterms-widget"
+          src="https://gettermscmp.com/cookie-consent/widget/2cad461f-5d39-4d4c-8692-e80ee8e0e657/en-us?auto=true"
+          strategy="afterInteractive"
+        />
+
+        {/*
+          HubSpot tracking + live chat (portal 246692701). Rendered PRE-BLOCKED:
+          `type="text/plain"` keeps the browser from executing/fetching it, and
+          `data-getterms-statistics` categorizes it as analytics — the GetTerms
+          blocker restores it (via __GT_UNBLOCK) only once the visitor grants
+          statistics/analytics consent. Do NOT switch this to next/script: it must
+          stay an inert text/plain tag so consent, not Next's loader, gates it.
+        */}
+        <script
           id="hs-script-loader"
+          type="text/plain"
+          data-getterms-statistics=""
           src="https://js-na2.hs-scripts.com/246692701.js"
-          strategy="lazyOnload"
         />
       </body>
     </html>
