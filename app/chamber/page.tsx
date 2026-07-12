@@ -31,8 +31,8 @@ const PERKS = [
     $100 is on us.
   </>,
   <>
-    <strong className="text-ink-900">Free on-site onboarding</strong> anywhere in the Austin area —
-    we&rsquo;ll set it up in person.
+    <strong className="text-ink-900">Free on-site onboarding</strong>{" "}
+    anywhere in the Austin area — we&rsquo;ll set it up in person.
   </>,
   <>
     <strong className="text-ink-900">A dedicated local contact</strong> — one person who knows you
