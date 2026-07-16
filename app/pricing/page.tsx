@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Banknote, Plus, Check } from "lucide-react";
+import { Banknote, Plus, Check, Plane } from "lucide-react";
 import { ogImages } from "@/lib/og/meta";
 import { Container } from "@/components/site/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
@@ -95,6 +95,11 @@ export default function PricingPage() {
                 </div>
                 <div className="mt-1 text-[12px] text-ink-500">margin over interchange</div>
                 <p className="mt-4 text-[14px] leading-relaxed text-ink-600">{t.blurb}</p>
+                <div className="mt-4 flex items-center gap-2 border-t border-ink-100 pt-4">
+                  <Plane size={15} strokeWidth={2.2} className="shrink-0 text-clay-500" />
+                  <span className="text-[13px] text-ink-600">Travel booking</span>
+                  <span className="ml-auto text-[13px] font-semibold text-ink-900">{t.travel}</span>
+                </div>
               </Card>
             ))}
           </div>

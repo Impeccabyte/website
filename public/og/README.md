@@ -18,6 +18,9 @@ pre-rendered PNGs keeps `next/og` out of the production build entirely.
 | `chamber.png` | `/chamber` | A proud member, *and a local partner* |
 | `partnerships.png` | `/partnerships` | Grow with a *partner* |
 | `contact.png` | `/contact` | Let's price *your business* |
+| `surcharge.png` | `/surcharge` | Let credit pay for *itself* |
+| `cash-discount.png` | `/cash-discount` | Stop paying to *get paid* |
+| `benefits-travel.png` | `/benefits/travel` | Travel, handled *impeccably* |
 | `product-payments.png` | `/products/payments` | Accept every *card* |
 | `product-pos.png` | `/products/pos` | Take a payment *anywhere* |
 | `product-online.png` | `/products/online` | A checkout that *converts* |
