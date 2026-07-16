@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { IconChip } from "@/components/ui/icon-chip";
 import { cn } from "@/lib/utils";
-import { PRODUCTS, SOLUTIONS, productOrder, solutionNavOrder } from "@/lib/data";
+import { PRODUCTS, SOLUTIONS, productOrder, solutionNavOrder, benefitsNav } from "@/lib/data";
 
-type MegaKey = "products" | "industries" | null;
+type MegaKey = "products" | "industries" | "benefits" | null;
 
 export function SiteHeader() {
   const [mega, setMega] = React.useState<MegaKey>(null);
@@ -41,7 +41,7 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-0.5 md:flex">
           <MegaTrigger label="Products" active={mega === "products"} onOpen={() => setMega("products")} />
           <MegaTrigger label="Industries" active={mega === "industries"} onOpen={() => setMega("industries")} />
-          <NavLink href="/partnerships" onEnter={() => setMega(null)}>Partnerships</NavLink>
+          <MegaTrigger label="Benefits" active={mega === "benefits"} onOpen={() => setMega("benefits")} />
           <NavLink href="/pricing" onEnter={() => setMega(null)}>Pricing</NavLink>
           <NavLink href="/about" onEnter={() => setMega(null)}>About</NavLink>
         </nav>
@@ -95,7 +95,7 @@ export function SiteHeader() {
                   );
                 })}
               </div>
-            ) : (
+            ) : mega === "industries" ? (
               <div className="grid grid-cols-4 gap-2.5">
                 {solutionNavOrder.map((k) => {
                   const s = SOLUTIONS[k];
@@ -110,6 +110,20 @@ export function SiteHeader() {
                     />
                   );
                 })}
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 gap-2.5">
+                {benefitsNav.map((b) => (
+                  <MegaItem
+                    key={b.key}
+                    href={b.href}
+                    icon={b.icon}
+                    label={b.nav}
+                    desc={b.menuDesc}
+                    tone="sage"
+                    badge={b.badge}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -177,13 +191,15 @@ function MegaItem({
   desc,
   tone,
   soon,
+  badge,
 }: {
   href?: string;
   icon: import("lucide-react").LucideIcon;
   label: string;
   desc: string;
-  tone: "clay" | "amber";
+  tone: "clay" | "amber" | "sage";
   soon?: boolean;
+  badge?: string;
 }) {
   const inner = (
     <>
@@ -198,6 +214,11 @@ function MegaItem({
           {soon && (
             <span className="rounded-pill border border-clay-100 bg-clay-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em] text-clay-600">
               Soon
+            </span>
+          )}
+          {!soon && badge && (
+            <span className="rounded-pill border border-sage-100 bg-sage-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em] text-sage-600">
+              {badge}
             </span>
           )}
         </div>
@@ -221,7 +242,7 @@ function MegaItem({
 /* ---------------- Mobile drawer ---------------- */
 
 function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [section, setSection] = React.useState<"products" | "industries" | null>(null);
+  const [section, setSection] = React.useState<"products" | "industries" | "benefits" | null>(null);
 
   React.useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -301,7 +322,24 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
           })}
         </DrawerCollapsible>
 
-        <DrawerRow href="/partnerships" onClose={onClose}>Partnerships</DrawerRow>
+        <DrawerCollapsible
+          label="Benefits"
+          open={section === "benefits"}
+          onToggle={() => setSection(section === "benefits" ? null : "benefits")}
+        >
+          {benefitsNav.map((b) => (
+            <Link key={b.key} href={b.href} onClick={onClose} className="flex items-center gap-3 py-2">
+              <IconChip icon={b.icon} tone="sage" size={32} className="rounded-lg" />
+              <span className="text-[15px] font-semibold text-ink-900">{b.nav}</span>
+              {b.badge && (
+                <span className="ml-auto rounded-pill border border-sage-100 bg-sage-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em] text-sage-600">
+                  {b.badge}
+                </span>
+              )}
+            </Link>
+          ))}
+        </DrawerCollapsible>
+
         <DrawerRow href="/pricing" onClose={onClose}>Pricing</DrawerRow>
         <DrawerRow href="/about" onClose={onClose}>About</DrawerRow>
 

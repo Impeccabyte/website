@@ -37,6 +37,13 @@ ${link("Locations", "/locations", "Metros we serve across Texas")}
 ${link("Partnerships", "/partnerships", "White-label reselling for agents and ISOs on Maverick rails")}
 ${link("Contact", "/contact", "Request a free statement analysis")}
 
+## Pricing programs
+${link("Cash Discount", "/cash-discount", "Dual pricing — the card price covers processing while cash customers get a discount; legal in all 50 states, no registration")}
+${link("Surcharge", "/surcharge", "A compliant fee on credit-card payments only; debit and cash pay nothing extra")}
+
+## Benefits
+${link("Travel", "/benefits/travel", "A dedicated travel advisor for every client — buying trips, team retreats, and vacations, free on Scale and Enterprise")}
+
 ## Products
 ${products.join("\n")}
 

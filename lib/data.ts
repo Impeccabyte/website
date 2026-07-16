@@ -388,6 +388,37 @@ export const homeSolutionKeys: SolutionKey[] = solutionNavOrder;
 export const footerProductKeys: ProductKey[] = productOrder.slice(0, 5);
 export const footerSolutionKeys: SolutionKey[] = solutionNavOrder.slice(0, 5);
 
+/* ---- Benefits (client perks — surfaced in the "Benefits" nav dropdown + footer) ---- */
+export type BenefitNavItem = {
+  key: string;
+  nav: string;
+  menuDesc: string;
+  icon: LucideIcon;
+  href: string;
+  badge?: string;
+};
+
+export const benefitsNav: BenefitNavItem[] = [
+  {
+    key: "travel",
+    nav: "Travel",
+    menuDesc: "A dedicated travel advisor for trips, retreats, and vacations — exclusive to clients",
+    icon: Plane,
+    href: "/benefits/travel",
+    badge: "New",
+  },
+];
+
+/* ---- Pricing programs (surcharge vs cash discount comparison, shared by both pages) ---- */
+export const programComparison: { label: string; surcharge: string; cashDiscount: string }[] = [
+  { label: "Applies to", surcharge: "Credit cards only", cashDiscount: "All cards except EBT" },
+  { label: "Debit", surcharge: "Priced separately", cashDiscount: "Included, not separate" },
+  { label: "Cap", surcharge: "3% (2% CO)", cashDiscount: "4%" },
+  { label: "Legal in all 50 states", surcharge: "No — six excluded", cashDiscount: "Yes" },
+  { label: "Registration", surcharge: "Required", cashDiscount: "Not required" },
+  { label: "Best for", surcharge: "Heavy debit volume; keep debit cheap", cashDiscount: "Cash-heavy; simplest setup" },
+];
+
 /* ---- Pricing ---- */
 export type PricingTier = {
   name: string;
@@ -395,14 +426,15 @@ export type PricingTier = {
   pct: string;
   fee: string;
   blurb: string;
+  travel: string;
   popular?: boolean;
 };
 
 export const pricingTiers: PricingTier[] = [
-  { name: "Starter", range: "Up to $25K / mo", pct: "0.45%", fee: "12¢", blurb: "For when you're just getting rolling." },
-  { name: "Growth", range: "$25K – $100K / mo", pct: "0.32%", fee: "10¢", blurb: "Our most popular rate for scaling businesses.", popular: true },
-  { name: "Scale", range: "$100K – $500K / mo", pct: "0.24%", fee: "8¢", blurb: "Margins keep dropping as your volume climbs." },
-  { name: "Enterprise", range: "$500K+ / mo", pct: "from 0.16%", fee: "7¢", blurb: "Custom pricing built around your book." },
+  { name: "Starter", range: "Up to $25K / mo", pct: "0.45%", fee: "12¢", blurb: "For when you're just getting rolling and finding your feet.", travel: "$99" },
+  { name: "Growth", range: "$25K – $100K / mo", pct: "0.32%", fee: "10¢", blurb: "Our most popular rate for scaling businesses.", travel: "$49", popular: true },
+  { name: "Scale", range: "$100K – $500K / mo", pct: "0.24%", fee: "8¢", blurb: "Margins keep dropping as your volume climbs.", travel: "Included" },
+  { name: "Enterprise", range: "$500K+ / mo", pct: "from 0.16%", fee: "7¢", blurb: "Custom pricing built around your book.", travel: "Included" },
 ];
 
 export const accountIncludes: string[] = [
