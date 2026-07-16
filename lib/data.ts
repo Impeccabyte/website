@@ -402,7 +402,7 @@ export const benefitsNav: BenefitNavItem[] = [
   {
     key: "travel",
     nav: "Travel",
-    menuDesc: "A dedicated travel advisor for trips, retreats, and vacations — exclusive to clients",
+    menuDesc: "A dedicated advisor for trips, retreats, and getaways",
     icon: Plane,
     href: "/benefits/travel",
     badge: "New",
