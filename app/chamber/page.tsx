@@ -45,7 +45,7 @@ const LOCAL = [
     icon: MapPin,
     tone: "clay" as const,
     title: "Based in Austin",
-    body: "We're headquartered right here at 1606 Headway Circle — not a call center three time zones away.",
+    body: "We live and work right here in Austin — not a call center three time zones away.",
   },
   {
     icon: Store,
