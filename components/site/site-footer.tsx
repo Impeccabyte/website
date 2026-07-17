@@ -68,9 +68,9 @@ export function SiteFooter() {
               fast payouts, and a real team behind you.
             </p>
             <p className="mt-4 text-[13.5px] leading-relaxed text-[rgba(243,235,222,0.55)]">
-              1606 Headway Circle Ste. 9317
+              17350 State Hwy 249, Ste 220 #37005
               <br />
-              Austin, TX 78754
+              Houston, Texas 77064 US
             </p>
             <a
               href="tel:+15129806236"

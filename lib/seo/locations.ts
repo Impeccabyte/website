@@ -46,14 +46,14 @@ export const CITIES: Record<string, City> = {
     serveIntro: "We work with Austin businesses across these neighborhoods:",
     zone: "in-range",
     intro: [
-      "Impeccabyte is headquartered in Austin — our team works out of 1606 Headway Circle in the Tech Ridge corridor of North Austin — so the merchants we serve here are also our neighbors.",
+      "Impeccabyte is based in Austin — we live and work here, and we come to you rather than asking you to come to us — so the merchants we serve here are also our neighbors.",
       "From food trailers and full-service kitchens on Rainey Street to DTC brands scaling out of The Domain and CBD shops along East Austin, we board Austin businesses on transparent interchange-plus pricing with next-day funding that keeps pace with a fast-moving city.",
     ],
     wedge: "Send us a recent processing statement and we'll break down, line by line, what you're actually paying today — free, no obligation, and usually back to you within a business day.",
     products: ["payments", "pos", "online"],
     industries: ["food", "highrisk", "retail"],
     faqs: [
-      { q: "Do you have an office in Austin?", a: "Yes. Austin is our home base — 1606 Headway Circle Ste. 9317, Austin, TX 78754 — so we meet local merchants on-site as well as remotely." },
+      { q: "Do you have an office in Austin?", a: "Austin is our home base — we live and work here — but we don't keep a walk-in storefront. We meet local merchants on-site at their business, or handle everything remotely if that's easier." },
       { q: "Can you approve a high-risk merchant account in Austin?", a: "Yes. We specialize in high-risk approvals for Austin's CBD, hemp, and vape retailers, plus other hard-to-place verticals, with underwriting that understands the category." },
       { q: "How does dual pricing work for an Austin restaurant?", a: "Dual pricing shows a card price and a lower cash price at checkout, so the card-processing cost is passed through transparently. We set it up compliantly and handle the signage and receipt disclosures." },
       { q: "What does it cost to switch processors?", a: "Nothing to look. We start with a free statement analysis and only recommend switching if we can genuinely beat what you pay now — there's no switching fee from us." },

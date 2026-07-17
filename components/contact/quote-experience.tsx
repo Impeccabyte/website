@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useActionState } from "react";
 import Script from "next/script";
-import { Check, FileUp, MapPin, Clock } from "lucide-react";
+import { Check, FileUp, Clock } from "lucide-react";
 import { Container } from "@/components/site/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Card } from "@/components/ui/card";
@@ -128,12 +128,6 @@ export function QuoteExperience() {
 
             <Card padding="none" elevation="sm" className="mt-8 p-5">
               <div className="flex items-start gap-3">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-clay-500" />
-                <span className="text-[14.5px] text-ink-700">
-                  1606 Headway Circle Ste. 9317, Austin, TX 78754
-                </span>
-              </div>
-              <div className="mt-3 flex items-start gap-3">
                 <Clock size={18} className="mt-0.5 shrink-0 text-clay-500" />
                 <span className="text-[14.5px] text-ink-700">Monday – Friday, 9–6 CT</span>
               </div>
