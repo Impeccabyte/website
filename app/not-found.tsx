@@ -72,7 +72,7 @@ export default function NotFound() {
             Back to home
           </ButtonLink>
           <ButtonLink href="/contact" variant="secondary" size="lg">
-            Get a Quote
+            Get a free statement analysis
           </ButtonLink>
         </div>
 

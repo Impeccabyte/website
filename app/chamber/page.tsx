@@ -98,7 +98,7 @@ export default function ChamberPage() {
               </p>
               <div className="mt-[30px] flex flex-wrap items-center gap-5">
                 <ButtonLink href="/contact" variant="primary" size="lg">
-                  Get a Quote
+                  Get a free statement analysis
                 </ButtonLink>
                 <a
                   href="#member-pricing"
@@ -227,7 +227,7 @@ export default function ChamberPage() {
                 </div>
                 <div className="mt-6">
                   <ButtonLink href="/contact" variant="primary" size="lg">
-                    Get a Quote
+                    Get a free statement analysis
                   </ButtonLink>
                 </div>
               </div>
@@ -275,7 +275,7 @@ export default function ChamberPage() {
         titleA="Let's get you"
         titleEm="set up."
         body="Tell us you're a Chamber member and we'll build your quote with member pricing from the start."
-        primary={{ label: "Get a Quote", href: "/contact" }}
+        primary={{ label: "Get a free statement analysis", href: "/contact" }}
         secondary={{ label: "Talk to us", href: "/contact" }}
       />
     </>

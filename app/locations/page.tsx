@@ -94,7 +94,7 @@ export default function LocationsHubPage() {
         titleA="Not on the list? We still"
         titleEm="have you."
         body="We serve businesses nationwide, with a home-team feel from Austin. Tell us where you are and we'll build a quote that fits."
-        primary={{ label: "Get a Quote", href: "/contact" }}
+        primary={{ label: "Get a free statement analysis", href: "/contact" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
     </>
