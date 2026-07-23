@@ -32,7 +32,7 @@ export function PriorityZonePanel({ zone }: { zone: PriorityZone }) {
         </div>
         <div className="mt-[26px] flex flex-wrap items-center gap-[18px]">
           <ButtonLink href="/contact" variant="primary" size="lg">
-            Get a Quote
+            Get a free statement analysis
           </ButtonLink>
           <span className="inline-flex items-baseline gap-[7px]">
             <span className="font-display text-[22px] font-semibold tracking-[-0.02em] text-ink-900">

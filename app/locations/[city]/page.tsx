@@ -97,7 +97,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
               <p className="mt-4 max-w-[520px] text-[16px] leading-relaxed text-ink-500">{c.intro[1]}</p>
               <div className="mt-8 flex flex-wrap items-center gap-5">
                 <ButtonLink href="/contact" variant="primary" size="lg">
-                  Get a Quote
+                  Get a free statement analysis
                 </ButtonLink>
                 <Link
                   href="/pricing"
@@ -129,7 +129,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
               <p className="mt-1.5 text-[15px] leading-relaxed text-ink-600">{c.wedge}</p>
             </div>
             <ButtonLink href="/contact" variant="primary" size="lg" className="shrink-0">
-              Get a Quote
+              Get a free statement analysis
             </ButtonLink>
           </div>
         </Container>
@@ -262,7 +262,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
         titleA={`Ready to price your ${c.name} business?`}
         titleEm="Let's talk."
         body="Tell us about your business and we'll build a custom interchange-plus quote — usually within a business day."
-        primary={{ label: "Get a Quote", href: "/contact" }}
+        primary={{ label: "Get a free statement analysis", href: "/contact" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
     </>

@@ -55,7 +55,7 @@ export default async function ProductPage({ params }: { params: Promise<{ key: s
               <p className="mt-5 max-w-[500px] text-[19px] leading-relaxed text-ink-600">{p.subtitle}</p>
               <div className="mt-8 flex flex-wrap items-center gap-5">
                 <ButtonLink href="/contact" variant="primary" size="lg">
-                  Get a Quote
+                  Get a free statement analysis
                 </ButtonLink>
                 <Link href="/pricing" className="inline-flex items-center gap-1.5 text-[16px] font-semibold text-clay-600 hover:text-clay-700">
                   See pricing <ArrowRight size={17} />
@@ -132,7 +132,7 @@ export default async function ProductPage({ params }: { params: Promise<{ key: s
         titleA="Ready to"
         titleEm="get started?"
         body="Tell us about your business and we'll build a custom quote — usually within a business day."
-        primary={{ label: "Get a Quote", href: "/contact" }}
+        primary={{ label: "Get a free statement analysis", href: "/contact" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
     </>

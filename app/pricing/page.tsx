@@ -148,7 +148,7 @@ export default function PricingPage() {
         titleA="See your"
         titleEm="custom rate."
         body="The calculator is an estimate — get an exact interchange-plus quote built around your business."
-        primary={{ label: "Get a Quote", href: "/contact" }}
+        primary={{ label: "Get a free statement analysis", href: "/contact" }}
         secondary={{ label: "Talk to us", href: "/contact" }}
       />
     </>
