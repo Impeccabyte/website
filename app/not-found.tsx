@@ -98,8 +98,8 @@ export default function NotFound() {
               howdy@impeccabyte.com
             </a>{" "}
             ·{" "}
-            <a href="tel:+15129806236" className="font-semibold text-clay-600">
-              +1 (512) 980-6236
+            <a href="tel:+18775842758" className="font-semibold text-clay-600">
+              +1 (877) 584-2758
             </a>
           </p>
         </div>

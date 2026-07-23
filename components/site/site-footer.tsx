@@ -73,11 +73,11 @@ export function SiteFooter() {
               Houston, Texas 77064 US
             </p>
             <a
-              href="tel:+15129806236"
+              href="tel:+18775842758"
               className="mt-3 flex w-fit items-center gap-2 text-[14px] text-[rgba(243,235,222,0.72)] transition-colors hover:text-[#F3EBDE]"
             >
               <Phone size={15} strokeWidth={2} aria-hidden className="text-amber-300" />
-              +1 (512) 980-6236
+              +1 (877) 584-2758
             </a>
             <a
               href="mailto:howdy@impeccabyte.com"

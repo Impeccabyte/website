@@ -17,7 +17,7 @@ export const ORG_NAME = "Impeccabyte";
 
 // TELEPHONE must match the Google Business Profile exactly. Null omits it from the
 // JSON-LD (never emit a fake value). Mirrors the tel: link in site-footer.tsx.
-export const TELEPHONE: string | null = "+1-512-980-6236";
+export const TELEPHONE: string | null = "+1-877-584-2758";
 // ⚠️ Keep GEO null. With no premises, the only coordinates on offer are a private
 // residence — publishing those would expose a home address and imply a storefront.
 // A service-area business is located by areaServed, not by a point.
