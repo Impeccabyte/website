@@ -218,7 +218,7 @@ export default function AboutPage() {
         titleEm="build with us."
         body="Get a quote in minutes, or reach out and talk to a real person in Austin."
         primary={{ label: "Get a free statement analysis", href: "/contact" }}
-        secondary={{ label: "Contact us", href: "/contact" }}
+        secondary={{ label: "Contact us", href: "/contact", chat: true }}
       />
     </>
   );

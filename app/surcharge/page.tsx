@@ -266,7 +266,7 @@ export default function SurchargePage() {
         titleEm="your statement."
         body="Before we recommend surcharging or anything else, we read your current statement and show you, line by line, what you're paying — and what your credit vs. debit mix really looks like. It's free, takes about a day, and there's no obligation on the other side of it."
         primary={{ label: "Send us your statement", href: "/contact" }}
-        secondary={{ label: "Book a 15-minute call", href: "/contact" }}
+        secondary={{ label: "Book a 15-minute call", href: "/contact", chat: true }}
       />
 
       <section className="px-6 pb-16">
