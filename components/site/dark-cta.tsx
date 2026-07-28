@@ -1,5 +1,30 @@
 import { Container } from "./container";
 import { ButtonLink } from "@/components/ui/button-link";
+import { ChatLink } from "@/components/ui/chat-link";
+
+/**
+ * One closing-CTA button.
+ *
+ * `chat: true` opens the Intercom messenger instead of navigating; `href` stays
+ * required and is the fallback the click follows whenever the messenger isn't
+ * available. See components/ui/chat-link.tsx.
+ */
+export type CTA = { label: string; href: string; chat?: boolean };
+
+function CTAButton({
+  cta,
+  variant,
+}: {
+  cta: CTA;
+  variant: "accent" | "dark-secondary";
+}) {
+  const Component = cta.chat ? ChatLink : ButtonLink;
+  return (
+    <Component href={cta.href} variant={variant} size="lg">
+      {cta.label}
+    </Component>
+  );
+}
 
 /** The warm espresso closing CTA repeated at the foot of every page. */
 export function DarkCTA({
@@ -13,8 +38,8 @@ export function DarkCTA({
   titleA: string;
   titleEm: string;
   body: string;
-  primary: { label: string; href: string };
-  secondary: { label: string; href: string };
+  primary: CTA;
+  secondary: CTA;
   /** Quiet legal line rendered under the card (e.g. the /integrations trademark notice). */
   footnote?: React.ReactNode;
 }) {
@@ -40,12 +65,8 @@ export function DarkCTA({
               {body}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <ButtonLink href={primary.href} variant="accent" size="lg">
-                {primary.label}
-              </ButtonLink>
-              <ButtonLink href={secondary.href} variant="dark-secondary" size="lg">
-                {secondary.label}
-              </ButtonLink>
+              <CTAButton cta={primary} variant="accent" />
+              <CTAButton cta={secondary} variant="dark-secondary" />
             </div>
           </div>
         </div>

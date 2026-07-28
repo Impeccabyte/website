@@ -276,7 +276,7 @@ export default function ChamberPage() {
         titleEm="set up."
         body="Tell us you're a Chamber member and we'll build your quote with member pricing from the start."
         primary={{ label: "Get a free statement analysis", href: "/contact" }}
-        secondary={{ label: "Talk to us", href: "/contact" }}
+        secondary={{ label: "Talk to us", href: "/contact", chat: true }}
       />
     </>
   );

@@ -5,7 +5,7 @@ import { Container } from "@/components/site/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Card } from "@/components/ui/card";
 import { Callout } from "@/components/ui/callout";
-import { ButtonLink } from "@/components/ui/button-link";
+import { ChatLink } from "@/components/ui/chat-link";
 import { DarkCTA } from "@/components/site/dark-cta";
 import { JsonLd } from "@/components/seo/json-ld";
 import { BentoGrid, IntegrationTile } from "@/components/integrations/bento";
@@ -137,9 +137,9 @@ export default function IntegrationsPage() {
                 If your tools connect to one of them, they connect to us.
               </p>
               <div className="mt-[30px] flex flex-wrap items-center gap-4">
-                <ButtonLink href="/contact" variant="primary" size="lg">
+                <ChatLink href="/contact" variant="primary" size="lg">
                   Ask about your software
-                </ButtonLink>
+                </ChatLink>
                 {/* Plain hash link: html { scroll-behavior: smooth; scroll-padding-top: 88px }
                     in globals.css already clears the sticky header, so no JS is needed. */}
                 <a
@@ -239,8 +239,8 @@ export default function IntegrationsPage() {
         titleA="Don't see"
         titleEm="your software?"
         body="If it connects to NMI or Authorize.Net, it almost certainly connects to us. Send us the name of the tool you run — we'll confirm within one business day."
-        primary={{ label: "Ask about your software", href: "/contact" }}
-        secondary={{ label: "Talk to us", href: "/contact" }}
+        primary={{ label: "Ask about your software", href: "/contact", chat: true }}
+        secondary={{ label: "Talk to us", href: "/contact", chat: true }}
         footnote={trademarkNotice}
       />
     </>

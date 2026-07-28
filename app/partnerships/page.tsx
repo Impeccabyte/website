@@ -3,7 +3,7 @@ import { Handshake, Share2, Code, Percent, Zap, Users, BarChart3 } from "lucide-
 import { Container } from "@/components/site/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Card } from "@/components/ui/card";
-import { ButtonLink } from "@/components/ui/button-link";
+import { ChatLink } from "@/components/ui/chat-link";
 import { IconChip } from "@/components/ui/icon-chip";
 import { SectionIntro } from "@/components/site/bits";
 import { DarkCTA } from "@/components/site/dark-cta";
@@ -48,12 +48,12 @@ export default function PartnershipsPage() {
                 with transparent revenue splits and a real team behind every deal.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <ButtonLink href="/contact" variant="primary" size="lg">
+                <ChatLink href="/contact" variant="primary" size="lg">
                   Become a partner
-                </ButtonLink>
-                <ButtonLink href="/contact" variant="secondary" size="lg">
+                </ChatLink>
+                <ChatLink href="/contact" variant="secondary" size="lg">
                   Talk to us
-                </ButtonLink>
+                </ChatLink>
               </div>
             </div>
             <TiltPanel
@@ -102,8 +102,8 @@ export default function PartnershipsPage() {
         titleA="Let's"
         titleEm="build together."
         body="Tell us how you'd like to partner, and we'll map out splits, boarding, and support for your book."
-        primary={{ label: "Become a partner", href: "/contact" }}
-        secondary={{ label: "Talk to us", href: "/contact" }}
+        primary={{ label: "Become a partner", href: "/contact", chat: true }}
+        secondary={{ label: "Talk to us", href: "/contact", chat: true }}
       />
     </>
   );
