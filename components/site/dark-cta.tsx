@@ -8,12 +8,15 @@ export function DarkCTA({
   body,
   primary,
   secondary,
+  footnote,
 }: {
   titleA: string;
   titleEm: string;
   body: string;
   primary: { label: string; href: string };
   secondary: { label: string; href: string };
+  /** Quiet legal line rendered under the card (e.g. the /integrations trademark notice). */
+  footnote?: React.ReactNode;
 }) {
   return (
     <section className="px-6 py-24">
@@ -46,6 +49,11 @@ export function DarkCTA({
             </div>
           </div>
         </div>
+        {footnote && (
+          <p className="mx-auto mt-5 max-w-[760px] text-center text-[12px] leading-relaxed text-ink-400">
+            {footnote}
+          </p>
+        )}
       </Container>
     </section>
   );

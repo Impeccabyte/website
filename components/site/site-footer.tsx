@@ -168,6 +168,7 @@ export function SiteFooter() {
                 { label: "About", href: "/about" },
                 { label: "Partnerships", href: "/partnerships" },
                 { label: "Locations", href: "/locations" },
+                { label: "Integrations", href: "/integrations" },
                 { label: "Get a Quote", href: "/contact" },
               ]}
             />
