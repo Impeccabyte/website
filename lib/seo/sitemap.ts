@@ -9,6 +9,7 @@ export function sitemapPaths(): string[] {
     "/about",
     "/partnerships",
     "/pricing",
+    "/integrations",
     "/surcharge",
     "/cash-discount",
     "/benefits/travel",

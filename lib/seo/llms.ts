@@ -32,6 +32,7 @@ Impeccabyte helps small businesses accept payments in person, online, and on the
 ## Main pages
 ${link("Home", "/", "Overview of Impeccabyte's payment products and pricing")}
 ${link("Pricing", "/pricing", "Interchange-plus rate tiers by monthly processing volume")}
+${link("Integrations", "/integrations", "The twelve gateways and payment platforms we offer, and the carts, accounting tools, CRMs, and terminals that connect to them")}
 ${link("About", "/about", "Who we are and how we work")}
 ${link("Locations", "/locations", "Metros we serve across Texas")}
 ${link("Partnerships", "/partnerships", "White-label reselling for agents and ISOs on Maverick rails")}

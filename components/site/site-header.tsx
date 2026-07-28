@@ -37,11 +37,14 @@ export function SiteHeader() {
           <Wordmark />
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-0.5 md:flex">
+        {/* Desktop nav — shown from lg (1024px), not md. Six items plus Sign In
+            and the quote button need ~980px; below that the row overflowed the
+            viewport, so tablets get the drawer instead. */}
+        <nav className="hidden items-center gap-0.5 lg:flex">
           <MegaTrigger label="Products" active={mega === "products"} onOpen={() => setMega("products")} />
           <MegaTrigger label="Industries" active={mega === "industries"} onOpen={() => setMega("industries")} />
           <MegaTrigger label="Benefits" active={mega === "benefits"} onOpen={() => setMega("benefits")} />
+          <NavLink href="/integrations" onEnter={() => setMega(null)}>Integrations</NavLink>
           <NavLink href="/pricing" onEnter={() => setMega(null)}>Pricing</NavLink>
           <NavLink href="/about" onEnter={() => setMega(null)}>About</NavLink>
         </nav>
@@ -51,7 +54,7 @@ export function SiteHeader() {
             href="https://dash.impeccabyte.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden rounded-pill px-3 py-2 text-[15px] font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-900 md:inline-flex"
+            className="hidden rounded-pill px-3 py-2 text-[15px] font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-900 lg:inline-flex"
           >
             Sign In
           </a>
@@ -62,7 +65,7 @@ export function SiteHeader() {
             variant="ghost"
             size="sm"
             aria-label="Open menu"
-            className="md:hidden px-2"
+            className="lg:hidden px-2"
             onClick={() => setMobile(true)}
           >
             <Menu size={22} />
@@ -73,7 +76,7 @@ export function SiteHeader() {
       {/* Mega menu panel */}
       {mega && (
         <div
-          className="absolute inset-x-0 top-full hidden border-b border-border-default bg-white shadow-lg md:block"
+          className="absolute inset-x-0 top-full hidden border-b border-border-default bg-white shadow-lg lg:block"
           onMouseEnter={() => setMega(mega)}
         >
           <div className="mx-auto max-w-[1240px] px-6 py-6">
@@ -254,7 +257,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] md:hidden">
+    <div className="fixed inset-0 z-[100] lg:hidden">
       <div
         className="absolute inset-0"
         style={{ background: "rgba(42,33,26,0.42)" }}
@@ -340,6 +343,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
           ))}
         </DrawerCollapsible>
 
+        <DrawerRow href="/integrations" onClose={onClose}>Integrations</DrawerRow>
         <DrawerRow href="/pricing" onClose={onClose}>Pricing</DrawerRow>
         <DrawerRow href="/about" onClose={onClose}>About</DrawerRow>
 
