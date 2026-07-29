@@ -25,4 +25,8 @@ describe("sitemapPaths", () => {
     const urls = sitemapPaths();
     expect(new Set(urls).size).toBe(urls.length);
   });
+
+  it("includes the industries hub", () => {
+    expect(sitemapPaths()).toContain("https://impeccabyte.com/industries");
+  });
 });

@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { Wordmark } from "./wordmark";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -99,20 +99,28 @@ export function SiteHeader() {
                 })}
               </div>
             ) : mega === "industries" ? (
-              <div className="grid grid-cols-4 gap-2.5">
-                {solutionNavOrder.map((k) => {
-                  const s = SOLUTIONS[k];
-                  return (
-                    <MegaItem
-                      key={k}
-                      href={`/industries/${s.key}`}
-                      icon={s.icon}
-                      label={s.nav}
-                      desc={s.menuDesc}
-                      tone="amber"
-                    />
-                  );
-                })}
+              <div>
+                <div className="grid grid-cols-4 gap-2.5">
+                  {solutionNavOrder.map((k) => {
+                    const s = SOLUTIONS[k];
+                    return (
+                      <MegaItem
+                        key={k}
+                        href={`/industries/${s.key}`}
+                        icon={s.icon}
+                        label={s.nav}
+                        desc={s.menuDesc}
+                        tone="amber"
+                      />
+                    );
+                  })}
+                </div>
+                <Link
+                  href="/industries"
+                  className="mt-3 inline-flex items-center gap-1.5 px-2.5 text-[14px] font-semibold text-clay-600 hover:text-clay-700"
+                >
+                  See all industries <ArrowRight size={15} />
+                </Link>
               </div>
             ) : (
               <div className="grid grid-cols-4 gap-2.5">
@@ -323,6 +331,9 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
               </Link>
             );
           })}
+          <Link href="/industries" onClick={onClose} className="flex items-center gap-3 py-2 font-semibold text-clay-600">
+            See all industries
+          </Link>
         </DrawerCollapsible>
 
         <DrawerCollapsible

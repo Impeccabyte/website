@@ -11,6 +11,7 @@ import { metadata as contact } from "@/app/contact/page";
 import { metadata as chamber } from "@/app/chamber/page";
 import { metadata as integrations } from "@/app/integrations/page";
 import { metadata as locations } from "@/app/locations/page";
+import { metadata as industriesHub } from "@/app/industries/page";
 import { metadata as privacy } from "@/app/privacy/page";
 import { metadata as terms } from "@/app/terms/page";
 import { metadata as cookies } from "@/app/cookies/page";
@@ -35,6 +36,7 @@ const STATIC: [string, Metadata][] = [
   ["/chamber", chamber],
   ["/integrations", integrations],
   ["/locations", locations],
+  ["/industries", industriesHub],
   ["/privacy", privacy],
   ["/terms", terms],
   ["/cookies", cookies],
