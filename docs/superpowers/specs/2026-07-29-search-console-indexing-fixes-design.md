@@ -124,12 +124,16 @@ All entries are `permanent: true`.
 host catch-all already sends `www/about` to the identical apex path, which is the correct
 outcome. Same reasoning applies to any future legacy path that collides with a live route.
 
-**Trailing slashes.** Every legacy URL in the GSC export ends in `/`; this project uses the
-Next default `trailingSlash: false`. Sources are written without the trailing slash on the
-assumption that Next normalises before matching. This assumption **must be verified against a
-running build** — if a legacy URL produces two hops (normalisation redirect, then the mapped
-redirect), add explicit trailing-slash sources. This is a required verification step, not an
-optional one.
+**Trailing slashes — measured, not assumed.** Every legacy URL in the GSC export ends in `/`;
+this project uses the Next default `trailingSlash: false`. Verified against a real build on
+2026-07-29: Next's normalizer runs **before** `redirects()`, so `/x` resolves in one hop and
+`/x/` takes two (normalize, then the rule). Explicit `/source/` rules cannot help — the slash
+is stripped before the redirect table is reached, making such rules dead code.
+
+Two hops is accepted. Googlebot follows up to 10 redirects and passes equity through the
+chain; the only route to one hop is `skipTrailingSlashRedirect: true`, which disables
+normalization sitewide and would let `/about` and `/about/` both render — a duplicate-content
+regression strictly worse than one extra hop on URLs being deindexed anyway.
 
 **Scope boundary.** Only the URLs Google actually reported are mapped. No blanket
 `/payments/:path*` or `/merchant-services/:path*` tail rules — a catch-all to the homepage
@@ -217,7 +221,7 @@ via Partnerships).
 **Build gate:** `npm run build && npm run lint && npm run test` all clean.
 
 **Post-deploy (after DNS cutover):** a curl matrix over all 29 CSV URLs asserting each returns
-its intended status and, for redirects, its intended `Location` in one hop. Then use GSC
+its intended status and final destination (one hop unslashed, two slashed). Then use GSC
 "Validate Fix" on the affected report.
 
 ## Explicitly out of scope
