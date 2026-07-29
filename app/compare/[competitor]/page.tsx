@@ -5,6 +5,7 @@ import { breadcrumbSchema } from "@/lib/seo/schema";
 import { ComparisonExperience } from "@/components/compare/comparison-experience";
 import { ComparisonClosing } from "@/components/compare/comparison-closing";
 import { COMPETITORS, competitorOrder, isCompetitorSlug, type CompetitorSlug } from "@/lib/compare";
+import { ogImages } from "@/lib/og/meta";
 
 /** Per-competitor meta descriptions, 150–160 characters each. */
 const DESCRIPTIONS: Record<CompetitorSlug, string> = {
@@ -36,6 +37,7 @@ export async function generateMetadata({
     title: `Impeccabyte vs. ${c.name} — the honest comparison`,
     description: DESCRIPTIONS[c.slug],
     alternates: { canonical: `/compare/${c.slug}` },
+    ...ogImages(`compare-${c.slug}`, `Impeccabyte vs. ${c.name}`),
   };
 }
 
