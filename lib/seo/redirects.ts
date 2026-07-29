@@ -5,8 +5,18 @@ import { SITE_URL } from "./org";
 /** The apex is canonical everywhere (metadataBase, sitemap, JSON-LD), so www redirects to it. */
 export const WWW_HOST = "www.impeccabyte.com";
 
-/** The retired business-formation section. Served 410 by app/business/[[...slug]]/route.ts. */
-export const GONE_PREFIX = "/business";
+/**
+ * Retired sections of the old site, each served 410 by an optional catch-all route
+ * handler (app/business/[[...slug]], app/wp-content/[[...slug]]). Prefix-based on
+ * purpose: it covers paths Google has not reported yet, which is how
+ * /business/services/dissolution/ was already handled when it first appeared.
+ */
+export const GONE_PREFIXES = ["/business", "/wp-content"] as const;
+
+/** True when a path falls under a retired section and should 410 rather than redirect. */
+export function isGonePath(path: string): boolean {
+  return GONE_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
+}
 
 /**
  * Every www path Google reported as crawled-not-indexed (export dated 2026-07-29),
@@ -36,7 +46,58 @@ export const REPORTED_LEGACY_PATHS: string[] = [
   "/are-traditional-merchant-services-dead-do-businesses-still-need-payment-gateways",
 ];
 
+/**
+ * Every www path from the second GSC export — issue "Not found (404)", dated
+ * 2026-07-29 — normalized without the trailing slash. Kept separate from
+ * REPORTED_LEGACY_PATHS so each fixture keeps the provenance of its own export.
+ *
+ * Excludes the apex `_next/static/media/*.woff2` entries (stale build hashes; every
+ * deploy rotates them and 404 is correct) and the app.impeccabyte.com entries (the
+ * host is NXDOMAIN and unreachable from this repo).
+ */
+export const REPORTED_404_PATHS: string[] = [
+  "/payments/industry/restaurants-and-bars",
+  "/payments/industry/professional-services",
+  "/payments/enterprise",
+  "/merchant-services/industry/specialty-markets",
+  "/merchant-services/industry/retail",
+  "/business/services/dissolution",
+  "/wp-content/themes/Divi/images",
+  "/wp-content/themes/Divi/includes/builder-5/images",
+];
+
 const to = (path: string) => `${SITE_URL}${path}`;
+
+/**
+ * Old industry slug -> current /industries key. The previous site published this same
+ * set under two parallel prefixes (see LEGACY_INDUSTRY_PREFIXES), and the 404 export
+ * surfaced mirrors we had not mapped, so both trees are generated from one table
+ * rather than hand-listed. A rule that never fires costs nothing; a missing one costs
+ * another multi-week recrawl cycle.
+ */
+const LEGACY_INDUSTRY_SLUGS: Record<string, string> = {
+  ecommerce: "ecommerce",
+  retail: "retail",
+  // "Specialty markets" was the old site's euphemism for high-risk categories.
+  "specialty-markets": "highrisk",
+  "trade-services": "services",
+  "professional-services": "services",
+  "restaurants-and-bars": "food",
+};
+
+const LEGACY_INDUSTRY_PREFIXES = ["/payments/industry", "/merchant-services/industry"];
+
+/** The mirrored industry trees, plus each tree's hub, as redirect rules. */
+function industryRedirects(): LegacyRedirect[] {
+  return LEGACY_INDUSTRY_PREFIXES.flatMap((prefix) => [
+    { source: prefix, destination: to("/industries"), permanent: true as const },
+    ...Object.entries(LEGACY_INDUSTRY_SLUGS).map(([old, key]) => ({
+      source: `${prefix}/${old}`,
+      destination: to(`/industries/${key}`),
+      permanent: true as const,
+    })),
+  ]);
+}
 
 /**
  * Old-site URLs that have a modern equivalent. Destinations are absolute apex URLs
@@ -53,15 +114,15 @@ export type LegacyRedirect = {
 
 export const LEGACY_REDIRECTS: LegacyRedirect[] = [
   { source: "/homepage/about", destination: to("/about"), permanent: true },
-  { source: "/payments/industry/ecommerce", destination: to("/industries/ecommerce"), permanent: true },
-  // "Specialty markets" was the old site's euphemism for high-risk categories.
-  { source: "/payments/industry/specialty-markets", destination: to("/industries/highrisk"), permanent: true },
-  { source: "/payments/industry/trade-services", destination: to("/industries/services"), permanent: true },
+  ...industryRedirects(),
   { source: "/payments/small-business", destination: to("/pricing"), permanent: true },
   { source: "/merchant-services/small-business", destination: to("/pricing"), permanent: true },
   { source: "/topic/payment-gateway", destination: to("/products/online"), permanent: true },
-  { source: "/merchant-services/enterprise", destination: to("/products/api"), permanent: true },
-  { source: "/merchant-services/industry", destination: to("/industries"), permanent: true },
+  // Enterprise intent lands on /pricing, not /products/api: the API product is flagged
+  // comingSoon and is not reachable from the nav, which is a weak destination for a
+  // commercial legacy URL. Rate-shopping is the likelier intent behind "enterprise".
+  { source: "/merchant-services/enterprise", destination: to("/pricing"), permanent: true },
+  { source: "/payments/enterprise", destination: to("/pricing"), permanent: true },
   { source: "/merchant-services/surcharge-and-dual-pricing-programs", destination: to("/surcharge"), permanent: true },
   // Two retired blog posts, both about gateways.
   {

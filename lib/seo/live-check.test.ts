@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { LEGACY_REDIRECTS, REPORTED_LEGACY_PATHS, GONE_PREFIX } from "@/lib/seo/redirects";
+import {
+  LEGACY_REDIRECTS,
+  REPORTED_LEGACY_PATHS,
+  REPORTED_404_PATHS,
+  isGonePath,
+} from "@/lib/seo/redirects";
 import { sitemapPaths } from "@/lib/seo/sitemap";
 import { SITE_URL } from "@/lib/seo/org";
 
@@ -64,16 +69,18 @@ const LEGACY_CASES = LEGACY_REDIRECTS.flatMap((r) => [
   { src: `${r.source}/`, dest: r.destination, hops: 2 },
 ]);
 
-const GONE_PATHS = REPORTED_LEGACY_PATHS.filter(
-  (p) => p === GONE_PREFIX || p.startsWith(`${GONE_PREFIX}/`)
-);
+/** Both GSC exports — crawled-not-indexed (2026-07-29) and Not-found-404 (2026-07-29). */
+const ALL_REPORTED = [...new Set([...REPORTED_LEGACY_PATHS, ...REPORTED_404_PATHS])];
+
+const GONE_PATHS = ALL_REPORTED.filter(isGonePath);
 
 /**
  * Reported www paths with no rule of their own: the host catch-all sweeps them to the
- * identical apex path. /about is a live page; the /business* ones then return 410.
- * Together with LEGACY_CASES this covers all 20 reported www URLs.
+ * identical apex path. /about is a live page; the /business* and /wp-content/* ones
+ * then return 410. Together with LEGACY_CASES this covers every reported www URL
+ * across both exports.
  */
-const SWEPT_PATHS = REPORTED_LEGACY_PATHS.filter(
+const SWEPT_PATHS = ALL_REPORTED.filter(
   (p) => !LEGACY_REDIRECTS.some((r) => r.source === p)
 );
 

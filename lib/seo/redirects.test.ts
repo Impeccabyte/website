@@ -2,7 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   LEGACY_REDIRECTS,
   REPORTED_LEGACY_PATHS,
-  GONE_PREFIX,
+  REPORTED_404_PATHS,
+  isGonePath,
   WWW_HOST,
   legacyRedirects,
 } from "@/lib/seo/redirects";
@@ -46,18 +47,57 @@ describe("legacy redirect map", () => {
   // on the apex too and loop forever.
   const LIVE_APEX_PATHS = ["/about"];
 
-  // The GSC export is checked in as a fixture: every reported URL must be handled by
-  // exactly one mechanism — a redirect, the 410 handler, or the www catch-all.
-  it.each(REPORTED_LEGACY_PATHS)("handles the reported URL %s exactly once", (path) => {
+  // Both GSC exports are checked in as fixtures: every reported URL must be handled by
+  // exactly one mechanism — a redirect, a 410 handler, or the www catch-all.
+  const handledOnce = (path: string) => {
     const redirected = LEGACY_REDIRECTS.some((r) => r.source === path);
-    const gone = path === GONE_PREFIX || path.startsWith(`${GONE_PREFIX}/`);
     const live = LIVE_APEX_PATHS.includes(path);
-    expect([redirected, gone, live].filter(Boolean)).toHaveLength(1);
-  });
+    return [redirected, isGonePath(path), live].filter(Boolean);
+  };
 
-  it("covers all 20 reported legacy paths", () => {
+  it.each(REPORTED_LEGACY_PATHS)(
+    "handles crawled-not-indexed URL %s exactly once",
+    (path) => expect(handledOnce(path)).toHaveLength(1)
+  );
+
+  it.each(REPORTED_404_PATHS)(
+    "handles 404-reported URL %s exactly once",
+    (path) => expect(handledOnce(path)).toHaveLength(1)
+  );
+
+  it("covers all 20 crawled-not-indexed paths and all 8 reported 404 paths", () => {
     expect(REPORTED_LEGACY_PATHS).toHaveLength(20);
     expect(new Set(REPORTED_LEGACY_PATHS).size).toBe(20);
+    expect(REPORTED_404_PATHS).toHaveLength(8);
+    expect(new Set(REPORTED_404_PATHS).size).toBe(8);
+  });
+
+  // The old site mirrored its industry tree under two prefixes. The 404 export surfaced
+  // mirrors the first pass missed, so both trees are now generated from one table —
+  // this asserts the generation actually produced both, not just the reported half.
+  it("maps every known industry slug under both legacy prefixes", () => {
+    const sources = new Set(LEGACY_REDIRECTS.map((r) => r.source));
+    const slugs = [
+      "ecommerce",
+      "retail",
+      "specialty-markets",
+      "trade-services",
+      "professional-services",
+      "restaurants-and-bars",
+    ];
+    for (const prefix of ["/payments/industry", "/merchant-services/industry"]) {
+      expect(sources.has(prefix), `${prefix} hub missing`).toBe(true);
+      for (const s of slugs) {
+        expect(sources.has(`${prefix}/${s}`), `${prefix}/${s} missing`).toBe(true);
+      }
+    }
+  });
+
+  it("sends both enterprise URLs to pricing, not the unlaunched API product", () => {
+    for (const s of ["/merchant-services/enterprise", "/payments/enterprise"]) {
+      const rule = LEGACY_REDIRECTS.find((r) => r.source === s);
+      expect(rule?.destination, `${s} rule missing`).toBe(`${SITE_URL}/pricing`);
+    }
   });
 
   it("keeps every live apex path in the sitemap", () => {
