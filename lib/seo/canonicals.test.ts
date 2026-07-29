@@ -15,11 +15,14 @@ import { metadata as industriesHub } from "@/app/industries/page";
 import { metadata as privacy } from "@/app/privacy/page";
 import { metadata as terms } from "@/app/terms/page";
 import { metadata as cookies } from "@/app/cookies/page";
+import { metadata as compare } from "@/app/compare/page";
 import { generateMetadata as productMeta } from "@/app/products/[key]/page";
 import { generateMetadata as industryMeta } from "@/app/industries/[key]/page";
 import { generateMetadata as cityMeta } from "@/app/locations/[city]/page";
+import { generateMetadata as competitorMeta } from "@/app/compare/[competitor]/page";
 import { productOrder, solutionNavOrder } from "@/lib/data";
 import { citySlugs } from "@/lib/seo/locations";
+import { competitorOrder } from "@/lib/compare";
 import { sitemapPaths } from "@/lib/seo/sitemap";
 import { SITE_URL } from "@/lib/seo/org";
 
@@ -35,6 +38,7 @@ const STATIC: [string, Metadata][] = [
   ["/contact", contact],
   ["/chamber", chamber],
   ["/integrations", integrations],
+  ["/compare", compare],
   ["/locations", locations],
   ["/industries", industriesHub],
   ["/privacy", privacy],
@@ -62,6 +66,11 @@ describe("self-referencing canonicals", () => {
     expect(meta.alternates?.canonical).toBe(`/locations/${city}`);
   });
 
+  it.each(competitorOrder)("/compare/%s declares itself canonical", async (competitor) => {
+    const meta = await competitorMeta({ params: Promise.resolve({ competitor }) });
+    expect(meta.alternates?.canonical).toBe(`/compare/${competitor}`);
+  });
+
   // Guard: if a route is added to the sitemap without a canonical assertion here, fail.
   it("asserts a canonical for every URL in the sitemap", () => {
     const covered = new Set<string>([
@@ -69,6 +78,7 @@ describe("self-referencing canonicals", () => {
       ...productOrder.map((k) => `/products/${k}`),
       ...solutionNavOrder.map((k) => `/industries/${k}`),
       ...citySlugs().map((s) => `/locations/${s}`),
+      ...competitorOrder.map((s) => `/compare/${s}`),
     ]);
     const uncovered = sitemapPaths()
       .map((u) => u.replace(SITE_URL, "") || "/")

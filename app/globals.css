@@ -191,6 +191,11 @@
   --color-brick-100: var(--brick-100);
   --color-brick-500: var(--brick-500);
 
+  --color-slate-50: var(--slate-50);
+  --color-slate-300: var(--slate-300);
+  --color-slate-500: var(--slate-500);
+  --color-slate-700: var(--slate-700);
+
   --color-paper: var(--paper);
   --color-surface-dark: var(--surface-dark);
   --color-on-dark: var(--text-on-dark);
@@ -309,6 +314,27 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
       animation-timeline: view();
       animation-range: entry 8% entry 50%;
     }
+  }
+}
+
+/* ============================================================
+   Competitor swap on /compare. The block is keyed on the active
+   competitor, so React remounts it on a tab change and this single
+   keyframe replays — no need for the prototype's trick of alternating
+   between two identical animations to force a restart.
+
+   Unlike .ib-rv above this is time-based, so the global
+   prefers-reduced-motion block at the foot of this file already
+   neutralises it by zeroing animation-duration. The explicit gate is
+   belt-and-braces and keeps the intent readable next to the rule.
+   ============================================================ */
+@keyframes ibSwap {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ib-cmp-swap {
+    animation: ibSwap 380ms var(--ease-out) both;
   }
 }
 

@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/seo/org";
 import { citySlugs } from "@/lib/seo/locations";
 import { productOrder, solutionNavOrder } from "@/lib/data";
+import { competitorOrder } from "@/lib/compare";
 
 /** Every indexable path, as absolute URLs. Single source for app/sitemap.ts. */
 export function sitemapPaths(): string[] {
@@ -10,6 +11,8 @@ export function sitemapPaths(): string[] {
     "/partnerships",
     "/pricing",
     "/integrations",
+    "/compare",
+    ...competitorOrder.map((s) => `/compare/${s}`),
     "/surcharge",
     "/cash-discount",
     "/benefits/travel",

@@ -36,6 +36,10 @@ pre-rendered PNGs keeps `next/og` out of the production build entirely.
 | `industry-nonprofits.png` | `/industries/nonprofits` | More of every gift *goes to work* |
 | `industry-highrisk.png` | `/industries/highrisk` | Approved when *others say no* |
 | `industry-agents.png` | `/industries/agents` | Grow your *portfolio* |
+| `compare.png` | `/compare` | The *honest* comparison. |
+| `compare-square.png` | `/compare/square` | Impeccabyte vs. *Square* |
+| `compare-shopify.png` | `/compare/shopify` | Impeccabyte vs. *Shopify* |
+| `compare-toast.png` | `/compare/toast` | Impeccabyte vs. *Toast* |
 
 ## Regenerating
 
