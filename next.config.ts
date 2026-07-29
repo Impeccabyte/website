@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { legacyRedirects } from "./lib/seo/redirects";
 
 const nextConfig: NextConfig = {
   // Don't advertise the framework in response headers.
@@ -14,6 +15,11 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "12mb",
     },
+  },
+  // Old-site URLs Google still crawls, plus the www -> apex canonical host redirect.
+  // Note: `permanent: true` emits 308 (not 301); Google treats them identically.
+  async redirects() {
+    return legacyRedirects();
   },
 };
 
