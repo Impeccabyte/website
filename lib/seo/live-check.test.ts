@@ -40,6 +40,14 @@ async function canonicalOf(url: string) {
   return html.match(/<link rel="canonical" href="([^"]+)"/)?.[1] ?? null;
 }
 
+/**
+ * `https://x.com` and `https://x.com/` are the same URL (RFC 3986: an empty path
+ * is equivalent to "/"). Next emits the bare origin for the root canonical unless
+ * trailingSlash is true, while sitemapPaths() emits the trailing-slash form —
+ * both correct, so compare them normalized.
+ */
+const sameUrl = (a: string | null, b: string) => a?.replace(/\/$/, "") === b.replace(/\/$/, "");
+
 const LEGACY_CASES = LEGACY_REDIRECTS.flatMap((r) => [
   { src: r.source, dest: r.destination, hops: 1 },
   // Every URL Google reported ends in a slash. Next's trailingSlash normalizer strips it
@@ -88,7 +96,11 @@ describe.skipIf(!BASE)("live site indexing fixes", () => {
   it.each(sitemapPaths())(
     "declares a self-referencing canonical on %s",
     async (url) => {
-      expect(await canonicalOf(url.replace(SITE_URL, BASE!))).toBe(url);
+      const canonical = await canonicalOf(url.replace(SITE_URL, BASE!));
+      // Compare through sameUrl() so a trailing-slash-only difference passes, but on a
+      // real mismatch this still asserts the raw canonical against url so vitest prints
+      // a diff instead of a bare boolean.
+      expect(sameUrl(canonical, url) ? url : canonical).toBe(url);
     },
     TIMEOUT
   );
@@ -96,7 +108,9 @@ describe.skipIf(!BASE)("live site indexing fixes", () => {
   it(
     "canonicalises the /?ref=ry.php duplicate to the homepage",
     async () => {
-      expect(await canonicalOf(`${BASE}/?ref=ry.php`)).toBe(`${SITE_URL}/`);
+      const canonical = await canonicalOf(`${BASE}/?ref=ry.php`);
+      const home = `${SITE_URL}/`;
+      expect(sameUrl(canonical, home) ? home : canonical).toBe(home);
     },
     TIMEOUT
   );
