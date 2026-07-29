@@ -97,10 +97,14 @@ describe.skipIf(!BASE)("live site indexing fixes", () => {
     "declares a self-referencing canonical on %s",
     async (url) => {
       const canonical = await canonicalOf(url.replace(SITE_URL, BASE!));
-      // Compare through sameUrl() so a trailing-slash-only difference passes, but on a
-      // real mismatch this still asserts the raw canonical against url so vitest prints
-      // a diff instead of a bare boolean.
-      expect(sameUrl(canonical, url) ? url : canonical).toBe(url);
+      if (url === `${SITE_URL}/`) {
+        // Root only. Next emits the bare origin for "/" (resolve-url.js special-cases
+        // pathname === "/"), while sitemapPaths() emits the slash form. Same URL per
+        // RFC 3986, so compare normalized. Every other path must match exactly.
+        expect(canonical?.replace(/\/$/, "")).toBe(url.replace(/\/$/, ""));
+      } else {
+        expect(canonical).toBe(url);
+      }
     },
     TIMEOUT
   );
