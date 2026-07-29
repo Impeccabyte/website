@@ -34,6 +34,7 @@
 | `lib/compare.test.ts` | Shape guard on the ported data. |
 | `components/compare/comparison-block.tsx` | Pure presentation for one competitor: centred intro, the two choose-if cards, the comparison table. No state. |
 | `components/compare/comparison-experience.tsx` | `"use client"`. Hero + pill switcher + the keyed, animated `ComparisonBlock`. Owns all page state. |
+| `components/compare/comparison-closing.tsx` | Server. The honesty callout + dark CTA + dated legal line, shared by both routes. Sole home for that copy. |
 | `app/compare/page.tsx` | The hub route. |
 | `app/compare/[competitor]/page.tsx` | The three competitor routes. |
 | `public/og/compare*.png` | Four 1200×630 share cards. |
@@ -491,11 +492,12 @@ git commit -m "feat(ui): add info callout variant, slate theme colors, compare s
 **Files:**
 - Create: `components/compare/comparison-block.tsx`
 - Create: `components/compare/comparison-experience.tsx`
+- Create: `components/compare/comparison-closing.tsx`
 - Create: `app/compare/page.tsx`
 
 **Interfaces:**
 - Consumes: `COMPETITORS`, `competitorOrder`, `COMPARE_AS_OF`, `HERO_LEDE`, `comparisonsLegalNotice`, `type CompetitorSlug`, `type Competitor` from `@/lib/compare`; `Callout` with `variant="info"` and the `.ib-cmp-swap` class from Task 2.
-- Produces: `function ComparisonBlock({ competitor, showHeading }: { competitor: Competitor; showHeading: boolean })`; `function ComparisonExperience({ initial, variant }: { initial: CompetitorSlug; variant: "hub" | "competitor" })`.
+- Produces: `function ComparisonBlock({ competitor, showHeading }: { competitor: Competitor; showHeading: boolean })`; `function ComparisonExperience({ initial, variant }: { initial: CompetitorSlug; variant: "hub" | "competitor" })`; `function ComparisonClosing()` — takes no props, rendered by both routes.
 
 **Note:** OG image wiring (`...ogImages(...)`) is deliberately **not** added here — the PNGs do not exist until Task 7, which adds the one-line spread to each page's metadata.
 
@@ -741,39 +743,31 @@ export function ComparisonExperience({
 }
 ```
 
-- [ ] **Step 3: Create the hub page**
+- [ ] **Step 3: Create the shared closing**
 
-Create `app/compare/page.tsx`:
+Both compare routes end with the same honesty callout and dark CTA. That copy is
+compliance-sensitive, so it lives in exactly one file rather than being spelled out twice.
+
+Create `components/compare/comparison-closing.tsx`:
 
 ```tsx
-import type { Metadata } from "next";
 import { Container } from "@/components/site/container";
 import { Callout } from "@/components/ui/callout";
 import { DarkCTA } from "@/components/site/dark-cta";
-import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbSchema } from "@/lib/seo/schema";
-import { ComparisonExperience } from "@/components/compare/comparison-experience";
 import { comparisonsLegalNotice } from "@/lib/compare";
 
-export const metadata: Metadata = {
-  title: "Compare us — the honest comparison",
-  description:
-    "Impeccabyte vs. Square, Shopify, and Toast. They're payment facilitators; we get you your own merchant account on TSYS or First Data Nashville rails.",
-  alternates: { canonical: "/compare" },
-};
-
-export default function ComparePage() {
+/**
+ * The tail of every compare route: the honesty callout, the dark CTA, and the
+ * dated legal line.
+ *
+ * Shared rather than repeated per route because the strings below are
+ * compliance-reviewed — one home means a copy change cannot land on the hub and
+ * miss the deep pages. Server-rendered: none of it responds to the switcher, so
+ * it sits outside the client component and outside the keyed block.
+ */
+export function ComparisonClosing() {
   return (
     <>
-      <JsonLd
-        data={breadcrumbSchema([
-          { name: "Home", path: "/" },
-          { name: "Compare", path: "/compare" },
-        ])}
-      />
-
-      <ComparisonExperience initial="square" variant="hub" />
-
       <section className="px-6 pt-[26px] pb-2">
         <Container className="max-w-[1160px]">
           <Callout variant="info" title="If you're happy where you are, stay">
@@ -797,12 +791,47 @@ export default function ComparePage() {
 }
 ```
 
-- [ ] **Step 4: Verify types and lint pass**
+- [ ] **Step 4: Create the hub page**
+
+Create `app/compare/page.tsx`:
+
+```tsx
+import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbSchema } from "@/lib/seo/schema";
+import { ComparisonExperience } from "@/components/compare/comparison-experience";
+import { ComparisonClosing } from "@/components/compare/comparison-closing";
+
+export const metadata: Metadata = {
+  title: "Compare us — the honest comparison",
+  description:
+    "Impeccabyte vs. Square, Shopify, and Toast. They're payment facilitators; we get you your own merchant account on TSYS or First Data Nashville rails.",
+  alternates: { canonical: "/compare" },
+};
+
+export default function ComparePage() {
+  return (
+    <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Compare", path: "/compare" },
+        ])}
+      />
+
+      <ComparisonExperience initial="square" variant="hub" />
+      <ComparisonClosing />
+    </>
+  );
+}
+```
+
+- [ ] **Step 5: Verify types and lint pass**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: no errors.
 
-- [ ] **Step 5: Verify the hub renders and behaves**
+- [ ] **Step 6: Verify the hub renders and behaves**
 
 Run: `npm run dev`, open `http://localhost:3000/compare`. Check all of:
 
@@ -819,7 +848,7 @@ Run: `npm run dev`, open `http://localhost:3000/compare`. Check all of:
 
 Stop the dev server.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add components/compare app/compare/page.tsx
@@ -848,19 +877,11 @@ Create `app/compare/[competitor]/page.tsx`:
 ```tsx
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Container } from "@/components/site/container";
-import { Callout } from "@/components/ui/callout";
-import { DarkCTA } from "@/components/site/dark-cta";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema } from "@/lib/seo/schema";
 import { ComparisonExperience } from "@/components/compare/comparison-experience";
-import {
-  COMPETITORS,
-  competitorOrder,
-  comparisonsLegalNotice,
-  isCompetitorSlug,
-  type CompetitorSlug,
-} from "@/lib/compare";
+import { ComparisonClosing } from "@/components/compare/comparison-closing";
+import { COMPETITORS, competitorOrder, isCompetitorSlug, type CompetitorSlug } from "@/lib/compare";
 
 /** Per-competitor meta descriptions, 150–160 characters each. */
 const DESCRIPTIONS: Record<CompetitorSlug, string> = {
@@ -915,25 +936,7 @@ export default async function CompetitorPage({
       />
 
       <ComparisonExperience initial={c.slug} variant="competitor" />
-
-      <section className="px-6 pt-[26px] pb-2">
-        <Container className="max-w-[1160px]">
-          <Callout variant="info" title="If you're happy where you are, stay">
-            These are good products — that's why they're the comparison. Our case is simple: past a
-            certain size, owning your merchant account beats renting one. If you're not there yet,
-            we'll tell you so on the first call.
-          </Callout>
-        </Container>
-      </section>
-
-      <DarkCTA
-        titleA="An account that's"
-        titleEm="actually yours."
-        body="Bring a recent statement from any of the three — we'll show you, line by line, what the same month would have cost on your own account."
-        primary={{ label: "Talk to us", href: "/contact" }}
-        secondary={{ label: "See pricing", href: "/pricing" }}
-        footnote={comparisonsLegalNotice}
-      />
+      <ComparisonClosing />
     </>
   );
 }
