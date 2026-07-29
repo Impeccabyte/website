@@ -3,6 +3,7 @@ import {
   LEGACY_REDIRECTS,
   REPORTED_LEGACY_PATHS,
   REPORTED_404_PATHS,
+  REPORTED_BLOCKED_PATHS,
   isGonePath,
   WWW_HOST,
   legacyRedirects,
@@ -45,31 +46,65 @@ describe("legacy redirect map", () => {
   // Reported paths that are ALSO live apex routes need no rule of their own — the www
   // catch-all sends them to the identical path on the apex. A specific rule would match
   // on the apex too and loop forever.
-  const LIVE_APEX_PATHS = ["/about"];
+  const LIVE_APEX_PATHS = ["/", "/about"];
 
-  // Both GSC exports are checked in as fixtures: every reported URL must be handled by
-  // exactly one mechanism — a redirect, a 410 handler, or the www catch-all.
-  const handledOnce = (path: string) => {
-    const redirected = LEGACY_REDIRECTS.some((r) => r.source === path);
-    const live = LIVE_APEX_PATHS.includes(path);
-    return [redirected, isGonePath(path), live].filter(Boolean);
+  /**
+   * How a path actually resolves in production, in precedence order. Next checks
+   * redirects BEFORE the filesystem, so a matching rule beats a 410 catch-all — which
+   * is what lets /topic/payment-gateway redirect while the rest of /topic/* is gone.
+   */
+  const resolutionOf = (path: string) => {
+    if (LEGACY_REDIRECTS.some((r) => r.source === path)) return "redirect";
+    if (isGonePath(path)) return "gone";
+    if (LIVE_APEX_PATHS.includes(path)) return "live";
+    return "unhandled";
   };
 
-  it.each(REPORTED_LEGACY_PATHS)(
-    "handles crawled-not-indexed URL %s exactly once",
-    (path) => expect(handledOnce(path)).toHaveLength(1)
+  // All three GSC exports are checked in as fixtures: every reported URL must resolve
+  // through one of the three mechanisms, never fall through to a bare 404.
+  it.each(REPORTED_LEGACY_PATHS)("resolves crawled-not-indexed URL %s", (path) =>
+    expect(resolutionOf(path)).not.toBe("unhandled")
   );
 
-  it.each(REPORTED_404_PATHS)(
-    "handles 404-reported URL %s exactly once",
-    (path) => expect(handledOnce(path)).toHaveLength(1)
+  it.each(REPORTED_404_PATHS)("resolves 404-reported URL %s", (path) =>
+    expect(resolutionOf(path)).not.toBe("unhandled")
   );
 
-  it("covers all 20 crawled-not-indexed paths and all 8 reported 404 paths", () => {
+  it.each(REPORTED_BLOCKED_PATHS)("resolves robots-blocked URL %s", (path) =>
+    expect(resolutionOf(path)).not.toBe("unhandled")
+  );
+
+  it("keeps each export's fixture at its reported size", () => {
     expect(REPORTED_LEGACY_PATHS).toHaveLength(20);
     expect(new Set(REPORTED_LEGACY_PATHS).size).toBe(20);
     expect(REPORTED_404_PATHS).toHaveLength(8);
     expect(new Set(REPORTED_404_PATHS).size).toBe(8);
+    expect(REPORTED_BLOCKED_PATHS).toHaveLength(16);
+    expect(new Set(REPORTED_BLOCKED_PATHS).size).toBe(16);
+  });
+
+  // The one deliberate overlap between a redirect rule and a gone prefix. If Next ever
+  // changed its ordering, this URL would start returning 410 instead of redirecting.
+  it("lets a redirect rule win over a gone prefix", () => {
+    expect(isGonePath("/topic/payment-gateway")).toBe(true);
+    expect(resolutionOf("/topic/payment-gateway")).toBe("redirect");
+    expect(resolutionOf("/topic/entrepreneurship")).toBe("gone");
+  });
+
+  it("mirrors every non-industry rule under both commercial prefixes", () => {
+    const sources = new Set(LEGACY_REDIRECTS.map((r) => r.source));
+    for (const suffix of ["small-business", "enterprise", "switch", "surcharge-and-dual-pricing-programs"]) {
+      for (const prefix of ["/payments", "/merchant-services"]) {
+        expect(sources.has(`${prefix}/${suffix}`), `${prefix}/${suffix} missing`).toBe(true);
+      }
+    }
+  });
+
+  it("maps the whole legacy /policy tree to the current legal pages", () => {
+    for (const [slug, dest] of [["cookies", "/cookies"], ["privacy", "/privacy"], ["terms", "/terms"]]) {
+      const rule = LEGACY_REDIRECTS.find((r) => r.source === `/policy/${slug}`);
+      expect(rule?.destination, `/policy/${slug} rule missing`).toBe(`${SITE_URL}${dest}`);
+    }
   });
 
   // The old site mirrored its industry tree under two prefixes. The 404 export surfaced

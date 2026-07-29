@@ -7,13 +7,19 @@ export const WWW_HOST = "www.impeccabyte.com";
 
 /**
  * Retired sections of the old site, each served 410 by an optional catch-all route
- * handler (app/business/[[...slug]], app/wp-content/[[...slug]]). Prefix-based on
- * purpose: it covers paths Google has not reported yet, which is how
- * /business/services/dissolution/ was already handled when it first appeared.
+ * handler under app/<prefix>/[[...slug]]/route.ts. Prefix-based on purpose: it covers
+ * paths Google has not reported yet, which is how /business/services/dissolution/ was
+ * already handled the first time it appeared in an export.
+ *
+ * /wp-content, /wp-admin and /author are dead WordPress trees (theme and plugin
+ * assets, the admin area, and author archives). /topic is the old blog taxonomy —
+ * note that /topic/payment-gateway still REDIRECTS rather than 410s, because
+ * redirects are evaluated before the filesystem, so a matching rule wins over the
+ * catch-all. That precedence is asserted in redirects.test.ts.
  */
-export const GONE_PREFIXES = ["/business", "/wp-content"] as const;
+export const GONE_PREFIXES = ["/business", "/wp-content", "/wp-admin", "/author", "/topic"] as const;
 
-/** True when a path falls under a retired section and should 410 rather than redirect. */
+/** True when a path falls under a retired section and has no redirect rule of its own. */
 export function isGonePath(path: string): boolean {
   return GONE_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
 }
@@ -66,15 +72,51 @@ export const REPORTED_404_PATHS: string[] = [
   "/wp-content/themes/Divi/includes/builder-5/images",
 ];
 
+/**
+ * Every www path from the third GSC export — issue "Blocked by robots.txt", dated
+ * 2026-07-29, all last crawled Feb-May 2026.
+ *
+ * The block itself is already resolved and needs no code: these were blocked by the
+ * OLD WordPress site's robots.txt, back when www served it. Since the DNS cutover, www
+ * redirects to the apex and inherits app/robots.ts, which disallows only /tools/. This
+ * fixture exists to assert each URL now resolves somewhere sensible instead.
+ *
+ * Excludes the two app.impeccabyte.com entries (host is NXDOMAIN). `/wp-admin/*` is
+ * recorded as `/wp-admin` — Search Console listed the robots.txt disallow *pattern*
+ * there, not a real crawled URL.
+ */
+export const REPORTED_BLOCKED_PATHS: string[] = [
+  "/",
+  "/payments/industry",
+  "/payments/industry/retail",
+  "/payments/surcharge-and-dual-pricing-programs",
+  "/payments/switch",
+  "/policy/cookies",
+  "/topic/entrepreneurship",
+  "/author/wpauserbb4os9dm",
+  "/wp-admin",
+  "/wp-content/plugins/gravityforms/images",
+  "/wp-content/plugins/gravityforms/assets/js/dist",
+  "/business/services",
+  "/business/services/virtual-address",
+  "/business/services/assumed-business-name",
+  "/business/services/reinstatement",
+  "/business/services/ein",
+];
+
 const to = (path: string) => `${SITE_URL}${path}`;
 
 /**
- * Old industry slug -> current /industries key. The previous site published this same
- * set under two parallel prefixes (see LEGACY_INDUSTRY_PREFIXES), and the 404 export
- * surfaced mirrors we had not mapped, so both trees are generated from one table
- * rather than hand-listed. A rule that never fires costs nothing; a missing one costs
- * another multi-week recrawl cycle.
+ * The old site published the SAME content tree under two commercial prefixes. Three
+ * separate GSC exports have now each surfaced a mirror we had not mapped — first the
+ * industry slugs, then /payments/enterprise, then
+ * /payments/surcharge-and-dual-pricing-programs. Rather than patch whichever half
+ * Google happens to report next, every rule below is generated under BOTH prefixes.
+ * A rule that never fires costs nothing; a missing one costs a multi-week recrawl.
  */
+const MIRRORED_PREFIXES = ["/payments", "/merchant-services"];
+
+/** Old industry slug -> current /industries key, published under `<prefix>/industry/`. */
 const LEGACY_INDUSTRY_SLUGS: Record<string, string> = {
   ecommerce: "ecommerce",
   retail: "retail",
@@ -85,18 +127,50 @@ const LEGACY_INDUSTRY_SLUGS: Record<string, string> = {
   "restaurants-and-bars": "food",
 };
 
-const LEGACY_INDUSTRY_PREFIXES = ["/payments/industry", "/merchant-services/industry"];
+/** Non-industry pages published directly under each commercial prefix. */
+const MIRRORED_SUFFIXES: Record<string, string> = {
+  "small-business": "/pricing",
+  // Enterprise intent lands on /pricing, not /products/api: the API product is flagged
+  // comingSoon and is not reachable from the nav, which is a weak destination for a
+  // commercial legacy URL. Rate-shopping is the likelier intent behind "enterprise".
+  enterprise: "/pricing",
+  // "Switch [processors]" is rate-shopping too — /pricing carries the interchange-plus
+  // explainer that is the actual switching pitch.
+  switch: "/pricing",
+  "surcharge-and-dual-pricing-programs": "/surcharge",
+};
 
-/** The mirrored industry trees, plus each tree's hub, as redirect rules. */
-function industryRedirects(): LegacyRedirect[] {
-  return LEGACY_INDUSTRY_PREFIXES.flatMap((prefix) => [
-    { source: prefix, destination: to("/industries"), permanent: true as const },
+/** The old WordPress legal tree. Only /policy/cookies was reported; the siblings are
+ *  generated because a WordPress legal section virtually always carries all three. */
+const POLICY_PAGES: Record<string, string> = {
+  cookies: "/cookies",
+  privacy: "/privacy",
+  terms: "/terms",
+};
+
+/** Every mirrored rule, generated under both commercial prefixes. */
+function mirroredRedirects(): LegacyRedirect[] {
+  return MIRRORED_PREFIXES.flatMap((prefix) => [
+    { source: `${prefix}/industry`, destination: to("/industries"), permanent: true as const },
     ...Object.entries(LEGACY_INDUSTRY_SLUGS).map(([old, key]) => ({
-      source: `${prefix}/${old}`,
+      source: `${prefix}/industry/${old}`,
       destination: to(`/industries/${key}`),
       permanent: true as const,
     })),
+    ...Object.entries(MIRRORED_SUFFIXES).map(([suffix, dest]) => ({
+      source: `${prefix}/${suffix}`,
+      destination: to(dest),
+      permanent: true as const,
+    })),
   ]);
+}
+
+function policyRedirects(): LegacyRedirect[] {
+  return Object.entries(POLICY_PAGES).map(([slug, dest]) => ({
+    source: `/policy/${slug}`,
+    destination: to(dest),
+    permanent: true as const,
+  }));
 }
 
 /**
@@ -114,16 +188,12 @@ export type LegacyRedirect = {
 
 export const LEGACY_REDIRECTS: LegacyRedirect[] = [
   { source: "/homepage/about", destination: to("/about"), permanent: true },
-  ...industryRedirects(),
-  { source: "/payments/small-business", destination: to("/pricing"), permanent: true },
-  { source: "/merchant-services/small-business", destination: to("/pricing"), permanent: true },
+  ...mirroredRedirects(),
+  ...policyRedirects(),
+  // Lives under the /topic gone-prefix but keeps a rule: redirects are evaluated before
+  // the filesystem, so this wins over the 410 catch-all. Every other /topic/* archive
+  // has no equivalent and correctly falls through to the 410.
   { source: "/topic/payment-gateway", destination: to("/products/online"), permanent: true },
-  // Enterprise intent lands on /pricing, not /products/api: the API product is flagged
-  // comingSoon and is not reachable from the nav, which is a weak destination for a
-  // commercial legacy URL. Rate-shopping is the likelier intent behind "enterprise".
-  { source: "/merchant-services/enterprise", destination: to("/pricing"), permanent: true },
-  { source: "/payments/enterprise", destination: to("/pricing"), permanent: true },
-  { source: "/merchant-services/surcharge-and-dual-pricing-programs", destination: to("/surcharge"), permanent: true },
   // Two retired blog posts, both about gateways.
   {
     source: "/how-to-choose-the-best-payment-gateway-in-5-minutes-austin-business-owners-guide",
