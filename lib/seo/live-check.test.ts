@@ -16,14 +16,21 @@ const TIMEOUT = 30_000;
 
 async function head(url: string) {
   try {
-    const res = await fetch(url, { redirect: "manual" });
+    const res = await fetch(url, { redirect: "manual", method: "HEAD" });
     return { status: res.status, location: res.headers.get("location") };
   } catch (e) {
     return { status: 0, location: null, error: String(e) };
   }
 }
 
-/** Follows redirects manually so hops can be counted. */
+/**
+ * Follows redirects manually so hops can be counted. Stops on the first
+ * non-redirect response, or once `max` hops is reached — in which case
+ * `truncated` is true and `url`/`hops` describe where it gave up, not a
+ * terminal destination. Callers that assert on `url` should check
+ * `truncated` first so a genuine redirect loop fails with a clear signal
+ * instead of a confusing "expected X to be Y".
+ */
 async function follow(start: string, max = 5) {
   let url = start;
   let hops = 0;
@@ -32,7 +39,8 @@ async function follow(start: string, max = 5) {
     if (![301, 302, 307, 308].includes(r.status) || !r.location) break;
     url = new URL(r.location, url).toString();
   }
-  return { url, hops };
+  const truncated = hops === max;
+  return { url, hops, truncated };
 }
 
 async function canonicalOf(url: string) {
@@ -60,6 +68,15 @@ const GONE_PATHS = REPORTED_LEGACY_PATHS.filter(
   (p) => p === GONE_PREFIX || p.startsWith(`${GONE_PREFIX}/`)
 );
 
+/**
+ * Reported www paths with no rule of their own: the host catch-all sweeps them to the
+ * identical apex path. /about is a live page; the /business* ones then return 410.
+ * Together with LEGACY_CASES this covers all 20 reported www URLs.
+ */
+const SWEPT_PATHS = REPORTED_LEGACY_PATHS.filter(
+  (p) => !LEGACY_REDIRECTS.some((r) => r.source === p)
+);
+
 describe.skipIf(!BASE)("live site indexing fixes", () => {
   it(
     "serves www over HTTPS and redirects it to the apex",
@@ -75,6 +92,7 @@ describe.skipIf(!BASE)("live site indexing fixes", () => {
     "sends www$src to its mapped destination in at most $hops hop(s)",
     async ({ src, dest, hops }) => {
       const r = await follow(`${WWW}${src}`);
+      expect(r.truncated, `redirect limit exceeded following www${src}`).toBe(false);
       expect(r.url).toBe(dest);
       expect(r.hops).toBeLessThanOrEqual(hops);
     },
@@ -85,8 +103,23 @@ describe.skipIf(!BASE)("live site indexing fixes", () => {
     "returns 410 for the retired %s",
     async (path) => {
       // A trailing-slash normalization hop may come first; the final status is what matters.
-      const { url } = await follow(`${BASE}${path}`);
+      const { url, truncated } = await follow(`${BASE}${path}`);
+      expect(truncated, `redirect limit exceeded following ${path}`).toBe(false);
       expect((await head(url)).status).toBe(410);
+    },
+    TIMEOUT
+  );
+
+  // Paths with no rule of their own: the host catch-all sweeps them to the identical
+  // apex path (a plain host swap, not a status assertion — the 410 statuses for the
+  // /business* paths are already covered by the GONE_PATHS case above; /about lands
+  // on a live 200).
+  it.each(SWEPT_PATHS)(
+    "sweeps www%s to the identical apex path",
+    async (path) => {
+      const r = await follow(`${WWW}${path}`);
+      expect(r.truncated, `redirect limit exceeded following www${path}`).toBe(false);
+      expect(r.url).toBe(`${SITE_URL}${path}`);
     },
     TIMEOUT
   );

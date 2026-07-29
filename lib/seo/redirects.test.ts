@@ -78,4 +78,13 @@ describe("legacy redirect map", () => {
     const all = legacyRedirects();
     expect(all.slice(0, LEGACY_REDIRECTS.length)).toEqual(LEGACY_REDIRECTS);
   });
+
+  // A source that is also a live route would re-match on the apex and loop forever.
+  // This is why /about has no rule of its own — see LIVE_APEX_PATHS above.
+  it("never uses a live sitemap path as a redirect source", () => {
+    const live = new Set(sitemapPaths().map((u) => u.replace(SITE_URL, "") || "/"));
+    for (const r of LEGACY_REDIRECTS) {
+      expect(live.has(r.source), `${r.source} shadows a live route — would loop`).toBe(false);
+    }
+  });
 });

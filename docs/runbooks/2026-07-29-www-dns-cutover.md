@@ -28,7 +28,9 @@ Until this cutover lands, the redirect map in `lib/seo/redirects.ts` cannot fire
 
     dig +short www.impeccabyte.com
     curl -sI https://www.impeccabyte.com/ | head -3         # expect 308 -> https://impeccabyte.com/
-    SEO_CHECK_BASE_URL=https://impeccabyte.com npx vitest run lib/seo/live-check.test.ts   # expect every case to pass
+    SEO_CHECK_BASE_URL=https://impeccabyte.com npx vitest run lib/seo/live-check.test.ts
+    # Expect every case to pass. A green run confirms all 20 reported www URLs now
+    # resolve correctly (redirect or 410) and every sitemap page's canonical is correct.
 
 **Then, in Google Search Console:**
 
