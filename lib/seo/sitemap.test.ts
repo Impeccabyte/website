@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { sitemapPaths } from "@/lib/seo/sitemap";
+import sitemap from "@/app/sitemap";
 import { productOrder, solutionNavOrder } from "@/lib/data";
 
 describe("sitemapPaths", () => {
@@ -28,5 +29,20 @@ describe("sitemapPaths", () => {
 
   it("includes the industries hub", () => {
     expect(sitemapPaths()).toContain("https://impeccabyte.com/industries");
+  });
+});
+
+describe("sitemap.xml entries", () => {
+  it("lists exactly the paths from sitemapPaths()", () => {
+    expect(sitemap().map((e) => e.url)).toEqual(sitemapPaths());
+  });
+
+  // A build-time lastModified would be identical across every URL and would change on
+  // every deploy, telling Google all 32 pages changed when they did not. changeFrequency
+  // and priority are ignored by Google outright. Emitting any of them is a regression.
+  it("emits no lastModified, changeFrequency, or priority", () => {
+    for (const entry of sitemap()) {
+      expect(Object.keys(entry), `${entry.url} carries extra fields`).toEqual(["url"]);
+    }
   });
 });
