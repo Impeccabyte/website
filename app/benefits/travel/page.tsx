@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "Travel — a dedicated advisor for every client",
   description:
     "Every Impeccabyte client gets a dedicated travel advisor for trips, retreats, and vacations — real planning, VIP hotel perks, and one flat per-trip fee that drops to free as you grow.",
+  alternates: { canonical: "/benefits/travel" },
   ...ogImages("benefits-travel", "Impeccabyte — travel, handled impeccably"),
 };
 

@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "Cash Discount — stop paying to get paid",
   description:
     "Dual pricing lets you keep the same margin on a card sale that you keep on a cash sale. Legal in all 50 states, no card-brand registration, net card cost near zero.",
+  alternates: { canonical: "/cash-discount" },
   ...ogImages("cash-discount", "Impeccabyte — stop paying to get paid"),
 };
 

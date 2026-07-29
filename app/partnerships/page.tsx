@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Partnerships — grow with Impeccabyte",
   description:
     "Refer merchants, build your own book on Maverick's rails, or embed payments in your product — with transparent revenue splits and a real team behind every deal.",
+  alternates: { canonical: "/partnerships" },
   ...ogImages("partnerships", "Impeccabyte — grow with a partner"),
 };
 

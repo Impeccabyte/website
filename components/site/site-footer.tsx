@@ -155,7 +155,10 @@ export function SiteFooter() {
             <div className="flex flex-col gap-10">
               <FooterColumn
                 title="Industries"
-                links={footerSolutionKeys.map((k) => ({ label: SOLUTIONS[k].nav, href: `/industries/${k}` }))}
+                links={[
+                  ...footerSolutionKeys.map((k) => ({ label: SOLUTIONS[k].nav, href: `/industries/${k}` })),
+                  { label: "All Industries", href: "/industries" },
+                ]}
               />
               <FooterColumn
                 title="Benefits"

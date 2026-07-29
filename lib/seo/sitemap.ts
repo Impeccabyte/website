@@ -20,6 +20,7 @@ export function sitemapPaths(): string[] {
     "/cookies",
     "/locations",
     ...citySlugs().map((s) => `/locations/${s}`),
+    "/industries",
     ...productOrder.map((k) => `/products/${k}`),
     ...solutionNavOrder.map((k) => `/industries/${k}`),
   ];

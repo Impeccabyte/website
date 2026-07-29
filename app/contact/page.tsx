@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Get a quote — see your rate in one business day",
   description:
     "Tell us a little about your business and we'll build a custom interchange-plus quote — no obligation, no pressure.",
+  alternates: { canonical: "/contact" },
   ...ogImages("contact", "Impeccabyte — let's price your business"),
 };
 

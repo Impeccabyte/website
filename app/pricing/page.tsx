@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "Pricing — interchange-plus, nothing hidden",
   description:
     "Interchange-plus pricing with no bundled tiers and no padding. See the true cost of every card, plus our one clear rate — the same fair deal on every product.",
+  alternates: { canonical: "/pricing" },
   ...ogImages("pricing", "Impeccabyte — transparent interchange-plus pricing"),
 };
 

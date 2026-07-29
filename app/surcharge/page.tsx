@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "Surcharging — let credit pay for credit",
   description:
     "Surcharging adds a small fee when a customer chooses to pay by credit card — the payment type that costs you the most. Here are all the rules, up front.",
+  alternates: { canonical: "/surcharge" },
   ...ogImages("surcharge", "Impeccabyte — let credit pay for itself"),
 };
 

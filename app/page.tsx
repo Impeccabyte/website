@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Quote } from "lucide-react";
 import { Container } from "@/components/site/container";
@@ -11,6 +12,12 @@ import { DarkCTA } from "@/components/site/dark-cta";
 import { HeroCluster } from "@/components/home/hero-cluster";
 import { Odometer } from "@/components/home/odometer";
 import { homeFeatureKeys, homeSolutionKeys } from "@/lib/data";
+
+// Title and description come from the root layout's `title.default`; this block
+// exists only to declare the canonical, so /?ref=… variants don't index separately.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const STEPS = [
   { n: "01", title: "Tell us about you", body: "Answer a few quick questions and we'll build a custom interchange-plus quote." },
