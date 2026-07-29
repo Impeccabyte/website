@@ -19,7 +19,11 @@ describe("retired /business section", () => {
     expect(res.headers.get("x-robots-tag")).toBe("noindex");
   });
 
-  it("covers all seven reported /business URLs", () => {
+  // Guards that the fixture and GONE_PREFIX stay in agreement. It does NOT prove the
+  // route resolves for these paths: GET() takes no arguments and Next's file-system
+  // router does the matching, so there is nothing for a unit test to drive. Real
+  // coverage is the runtime probe in the task's verification step (all seven end at 410).
+  it("keeps seven reported /business paths classified under GONE_PREFIX", () => {
     const gone = REPORTED_LEGACY_PATHS.filter(
       (p) => p === GONE_PREFIX || p.startsWith(`${GONE_PREFIX}/`)
     );
