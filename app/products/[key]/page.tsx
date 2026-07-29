@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ key: stri
   return {
     title: `${p.titleA} ${p.titleEm} · ${p.nav}`,
     description: p.subtitle,
+    alternates: { canonical: `/products/${p.key}` },
     ...ogImages(`product-${p.key}`, `${p.nav} · Impeccabyte`),
   };
 }

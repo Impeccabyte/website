@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "About — merchant services for the next generation",
   description:
     "Impeccabyte is merchant services for the freelancers, makers, and small storefronts who deserve fair pricing and a human on the other end. Based in Austin, backed by Maverick Payments.",
+  alternates: { canonical: "/about" },
   ...ogImages("about", "Impeccabyte — payments, done right"),
 };
 

@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Austin LGBT Chamber of Commerce — member pricing & local support",
   description:
     "A proud member of the Austin LGBT Chamber of Commerce. Fellow members get our best pricing from day one, a waived monthly minimum, free on-site onboarding, and a dedicated local contact.",
+  alternates: { canonical: "/chamber" },
   ...ogImages("chamber", "Impeccabyte — a proud Austin LGBT Chamber of Commerce member and local partner"),
 };
 
