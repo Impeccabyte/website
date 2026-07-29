@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { sitemapPaths } from "@/lib/seo/sitemap";
 import sitemap from "@/app/sitemap";
 import { productOrder, solutionNavOrder } from "@/lib/data";
+import { competitorOrder } from "@/lib/compare";
 
 describe("sitemapPaths", () => {
   it("includes the locations hub and all three city pages as absolute URLs", () => {
@@ -29,6 +30,14 @@ describe("sitemapPaths", () => {
 
   it("includes the industries hub", () => {
     expect(sitemapPaths()).toContain("https://impeccabyte.com/industries");
+  });
+
+  it("includes the compare hub and all three competitor pages", () => {
+    const urls = sitemapPaths();
+    expect(urls).toContain("https://impeccabyte.com/compare");
+    for (const slug of competitorOrder) {
+      expect(urls).toContain(`https://impeccabyte.com/compare/${slug}`);
+    }
   });
 });
 
