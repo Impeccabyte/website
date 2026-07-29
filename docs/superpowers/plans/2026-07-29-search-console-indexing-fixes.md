@@ -22,7 +22,12 @@
 - **`FAQPage` JSON-LD requires matching visible on-page FAQ content.** Never emit FAQ schema for questions that aren't rendered.
 - **No `geo.*` / ICBM meta tags** anywhere.
 - **Only real NAP:** `1606 Headway Circle Ste. 9317, Austin, TX 78754`, `+1-512-980-6236`. No Dallas or San Antonio addresses.
-- **Commit after every task.** Run `npm run test && npm run lint && npm run build` before each commit.
+- **Commit after every task.** Run `npm run test`, `npm run lint`, and `npm run build` before each commit.
+- **`npm run lint` already fails on this repo** with 14 pre-existing problems (8 errors, 6 warnings) in
+  `components/tools/statement-analyzer.tsx`, `components/tools/statement-gate.tsx`, `lib/hubspot/client.ts`,
+  and `lib/hubspot/quote-form.test.ts` — verified identical at the branch base. The gate is therefore
+  **no NEW lint problems**, not a clean lint run. Compare the count and the file list; if either grows,
+  the task introduced a regression. Do not fix the pre-existing ones — they are outside every task's scope.
 
 ---
 
