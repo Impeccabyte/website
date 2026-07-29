@@ -165,16 +165,27 @@ export function SiteFooter() {
                 links={benefitsNav.map((b) => ({ label: b.nav, href: b.href }))}
               />
             </div>
-            <FooterColumn
-              title="Company"
-              links={[
-                { label: "About", href: "/about" },
-                { label: "Partnerships", href: "/partnerships" },
-                { label: "Locations", href: "/locations" },
-                { label: "Integrations", href: "/integrations" },
-                { label: "Get a Quote", href: "/contact" },
-              ]}
-            />
+            <div className="flex flex-col gap-10">
+              <FooterColumn
+                title="Company"
+                links={[
+                  { label: "About", href: "/about" },
+                  { label: "Partnerships", href: "/partnerships" },
+                  { label: "Locations", href: "/locations" },
+                  { label: "Integrations", href: "/integrations" },
+                  { label: "Get a Quote", href: "/contact" },
+                ]}
+              />
+              {/* Compare is intentionally footer-only — no nav or drawer entry. */}
+              <FooterColumn
+                title="Compare"
+                links={[
+                  { label: "vs. Square", href: "/compare/square" },
+                  { label: "vs. Shopify", href: "/compare/shopify" },
+                  { label: "vs. Toast", href: "/compare/toast" },
+                ]}
+              />
+            </div>
           </div>
         </div>
 
