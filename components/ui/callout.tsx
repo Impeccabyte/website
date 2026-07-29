@@ -3,15 +3,6 @@ import { CircleAlert, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Inline message banner.
- *
- * `brand` (default) is the clay-tinted rule-on-the-left treatment used on the
- * About page. `warning` and `info` mirror the design system's Callout — full
- * hairline, leading icon. `warning` (amber) is for the moments where we're
- * telling you something you may not want to hear (see /integrations → Shopify);
- * `info` (slate) is the neutral aside, e.g. /compare → "if you're happy where
- * you are, stay".
- *
  * The `info` colours are the design system's `.ib-callout--info` verbatim:
  * slate-50 ground, #D6E0E4 hairline (there is no --slate-100 token), slate-500
  * mark.
@@ -21,6 +12,16 @@ const HAIRLINE_TONES = {
   info: { icon: Info, surface: "border-[#D6E0E4] bg-slate-50", mark: "text-slate-500" },
 } as const;
 
+/**
+ * Inline message banner.
+ *
+ * `brand` (default) is the clay-tinted rule-on-the-left treatment used on the
+ * About page. `warning` and `info` mirror the design system's Callout — full
+ * hairline, leading icon. `warning` (amber) is for the moments where we're
+ * telling you something you may not want to hear (see /integrations → Shopify);
+ * `info` (slate) is the neutral aside, e.g. /compare → "if you're happy where
+ * you are, stay".
+ */
 export function Callout({
   title,
   children,

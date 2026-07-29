@@ -56,9 +56,16 @@ export function ComparisonBlock({
             Impeccabyte vs. {competitor.name}
           </h2>
         )}
-        <p className={`text-[15px] font-semibold text-clay-600 ${showHeading ? "mt-2" : ""}`}>
-          {competitor.tagline}
-        </p>
+        {showHeading ? (
+          <p className="mt-2 text-[15px] font-semibold text-clay-600">{competitor.tagline}</p>
+        ) : (
+          // showHeading is false on the deep routes, where the page's own h1
+          // already covers the h2 the hub would print here. Without this, the
+          // tagline rendered as a <p> and orphaned the "Choose … if…" h3s below
+          // it (h1 -> h3, no h2 in between). Same copy, same visual styling —
+          // just a heading element instead of a paragraph.
+          <h2 className="text-[15px] font-semibold text-clay-600">{competitor.tagline}</h2>
+        )}
         <p className="mt-3.5 text-[16px] leading-[1.65] text-ink-600">{competitor.who}</p>
       </div>
 
@@ -87,7 +94,9 @@ export function ComparisonBlock({
 
       <Card padding="none" role="table" className="mt-[14px] overflow-hidden">
         <div role="row" className={`${ROW} max-[760px]:hidden`}>
-          <div role="columnheader" className={CELL} />
+          <div role="columnheader" className={CELL}>
+            <span className="sr-only">Dimension</span>
+          </div>
           <div
             role="columnheader"
             className={`${CELL} text-[12px] font-bold uppercase tracking-[0.08em] text-ink-400`}
@@ -110,12 +119,18 @@ export function ComparisonBlock({
               {row.d}
             </div>
             <div role="cell" className={`${CELL} text-[14px] leading-[1.55] text-ink-600`}>
+              <span className="hidden text-[11px] font-bold uppercase tracking-[0.06em] text-ink-400 max-[760px]:block">
+                {competitor.name}
+              </span>
               {row.them}
             </div>
             <div
               role="cell"
               className={`${CELL} bg-clay-50 text-[14px] leading-[1.55] text-ink-800`}
             >
+              <span className="hidden text-[11px] font-bold uppercase tracking-[0.06em] text-clay-700 max-[760px]:block">
+                Impeccabyte
+              </span>
               {row.us}
             </div>
           </div>

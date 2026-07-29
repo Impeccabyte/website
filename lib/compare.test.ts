@@ -57,10 +57,41 @@ describe("freshness marker", () => {
   });
 });
 
+describe("verbatim compliance copy", () => {
+  // These glyphs are load-bearing: the strings are reproduced exactly from
+  // legally-reviewed source. A smart-quotes pass or Prettier normalisation
+  // would silently change them, so assert them by codepoint.
+  it("keeps the curly apostrophes", () => {
+    expect(COMPETITORS.square.rows[2].us).toContain("surprises don’t happen later");
+    expect(COMPETITORS.toast.us[2]).toContain("You’d rather see");
+  });
+
+  it("keeps the straight apostrophes", () => {
+    expect(COMPETITORS.square.who).toContain("you're a sub-merchant");
+    expect(COMPETITORS.shopify.who).toContain("We'll say it plainly");
+  });
+
+  it("keeps the curly double quotes around free", () => {
+    expect(COMPETITORS.toast.who).toContain("“free” hardware");
+    expect(COMPETITORS.toast.rows[0].them).toContain("“free” hardware");
+  });
+
+  it("keeps the single-glyph ellipsis", () => {
+    expect(COMPETITORS.shopify.us[1]).toMatch(/etc…$/);
+  });
+});
+
 describe("isCompetitorSlug", () => {
   it("accepts known slugs and rejects everything else", () => {
     expect(isCompetitorSlug("square")).toBe(true);
     expect(isCompetitorSlug("stripe")).toBe(false);
     expect(isCompetitorSlug("")).toBe(false);
+  });
+
+  it("rejects Object.prototype keys (the `in` operator walks the prototype chain)", () => {
+    expect(isCompetitorSlug("toString")).toBe(false);
+    expect(isCompetitorSlug("constructor")).toBe(false);
+    expect(isCompetitorSlug("__proto__")).toBe(false);
+    expect(isCompetitorSlug("valueOf")).toBe(false);
   });
 });

@@ -28,7 +28,7 @@ export type Competitor = {
 };
 
 /** Left-to-right order of the switcher pills. */
-export const competitorOrder: CompetitorSlug[] = ["square", "shopify", "toast"];
+export const competitorOrder: readonly CompetitorSlug[] = ["square", "shopify", "toast"];
 
 /**
  * Freshness marker on the legal line. This is a truth claim about when we last
@@ -177,5 +177,5 @@ export const COMPETITORS: Record<CompetitorSlug, Competitor> = {
 };
 
 export function isCompetitorSlug(value: string): value is CompetitorSlug {
-  return value in COMPETITORS;
+  return Object.hasOwn(COMPETITORS, value);
 }

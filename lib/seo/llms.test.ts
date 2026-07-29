@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { llmsTxt } from "@/lib/seo/llms";
 import { productOrder, solutionNavOrder } from "@/lib/data";
 import { citySlugs } from "@/lib/seo/locations";
+import { sitemapPaths } from "@/lib/seo/sitemap";
 
 describe("llmsTxt", () => {
   const txt = llmsTxt();
@@ -22,5 +23,12 @@ describe("llmsTxt", () => {
 
   it("never exposes the private /tools area", () => {
     expect(txt).not.toContain("/tools");
+  });
+
+  it("covers every URL in the sitemap", () => {
+    const txt = llmsTxt();
+    for (const url of sitemapPaths()) {
+      expect(txt, `${url} is in the sitemap but missing from llms.txt`).toContain(url);
+    }
   });
 });

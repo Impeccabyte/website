@@ -33,6 +33,9 @@ export function ComparisonExperience({
   function select(slug: CompetitorSlug) {
     if (slug === active) return; // clicking the active pill is a no-op
     setActive(slug);
+    // Known trade-off: this is a shallow URL swap, so the router tree doesn't
+    // know it happened. Pressing Back onto a restored history entry can show
+    // the hub body under a competitor URL (or vice versa); a reload self-heals.
     window.history.replaceState(null, "", `/compare/${slug}`);
   }
 
@@ -89,8 +92,10 @@ export function ComparisonExperience({
             })}
           </div>
 
-          {/* Keyed on the slug: React remounts the subtree, which replays .ib-cmp-swap. */}
-          <div key={active} className="ib-cmp-swap">
+          {/* Keyed on the slug: React remounts the subtree, which replays .ib-cmp-swap.
+              aria-live="polite" announces the swapped content to screen readers —
+              aria-pressed on the pills alone doesn't tell them what changed below. */}
+          <div key={active} className="ib-cmp-swap" aria-live="polite">
             <ComparisonBlock competitor={competitor} showHeading={variant === "hub"} />
           </div>
         </Container>

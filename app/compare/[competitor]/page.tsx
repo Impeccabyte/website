@@ -17,6 +17,8 @@ const DESCRIPTIONS: Record<CompetitorSlug, string> = {
     "Toast bundles processing, multi-year terms, and hardware that bricks if you leave. Impeccabyte gets you your own merchant account and hardware you keep.",
 };
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return competitorOrder.map((competitor) => ({ competitor }));
 }

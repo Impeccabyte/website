@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/seo/org";
 import { PRODUCTS, SOLUTIONS, productOrder, solutionNavOrder } from "@/lib/data";
 import { CITIES, citySlugs } from "@/lib/seo/locations";
+import { COMPETITORS, competitorOrder } from "@/lib/compare";
 
 /** A markdown link line for the llms.txt spec: `- [name](url): description`. */
 function link(name: string, path: string, desc: string): string {
@@ -21,6 +22,13 @@ export function llmsTxt(): string {
   );
   const locations = citySlugs().map((s) =>
     link(CITIES[s].region, `/locations/${s}`, CITIES[s].tagline),
+  );
+  const comparisons = competitorOrder.map((slug) =>
+    link(
+      `Impeccabyte vs. ${COMPETITORS[slug].name}`,
+      `/compare/${slug}`,
+      `How Impeccabyte compares with ${COMPETITORS[slug].name}: pricing, account ownership, holds, payouts, support`,
+    ),
   );
 
   return `# Impeccabyte
@@ -49,7 +57,12 @@ ${link("Travel", "/benefits/travel", "A dedicated travel advisor for every clien
 ${products.join("\n")}
 
 ## Industries
+${link("Industries", "/industries", "Industries we serve, by vertical")}
 ${industries.join("\n")}
+
+## Comparisons
+${link("Compare", "/compare", "Impeccabyte compared with Square, Shopify, and Toast")}
+${comparisons.join("\n")}
 
 ## Locations
 ${locations.join("\n")}
