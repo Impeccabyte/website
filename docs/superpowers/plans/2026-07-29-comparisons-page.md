@@ -20,6 +20,7 @@
 - **No nav or mobile-drawer entry for Compare.** Footer link only — this is intentional, not an oversight. Do not touch `components/site/site-header.tsx`.
 - **`next/og` must not end up in the production build.** It is restored temporarily in Task 7 and deleted again in the same task. See `public/og/README.md`.
 - **Never pure black, never a pure-white page background.** All colours come from the existing token scale.
+- **Lint baseline: `npm run lint` already fails on `main`** — 14 problems (8 errors, 6 warnings) in `components/tools/statement-analyzer.tsx`, `components/tools/statement-gate.tsx`, `lib/hubspot/client.ts`, and `lib/hubspot/quote-form.test.ts`. None of those files are in scope for this plan. Verify lint by running `npx eslint` **on the files your task touched** and requiring no output. Never "fix" the pre-existing failures — that is scope creep into unrelated code.
 - **Run from the repo root** on branch `feat/compare-pages`.
 
 ---
@@ -470,8 +471,13 @@ This keeps the existing `warning` rendering byte-identical (same classes, same o
 
 - [ ] **Step 4: Verify types and lint pass**
 
-Run: `npx tsc --noEmit && npm run lint`
-Expected: no errors.
+Run: `npx tsc --noEmit`
+Expected: no output.
+
+Then lint **only the files this task touched** — see the lint baseline in Global Constraints:
+
+Run: `npx eslint <the files you created or modified in this task>`
+Expected: no output. Do not run `npm run lint` and do not try to clear the repo's pre-existing failures — those files are out of scope.
 
 - [ ] **Step 5: Verify the existing warning callout still renders**
 
@@ -828,8 +834,13 @@ export default function ComparePage() {
 
 - [ ] **Step 5: Verify types and lint pass**
 
-Run: `npx tsc --noEmit && npm run lint`
-Expected: no errors.
+Run: `npx tsc --noEmit`
+Expected: no output.
+
+Then lint **only the files this task touched** — see the lint baseline in Global Constraints:
+
+Run: `npx eslint <the files you created or modified in this task>`
+Expected: no output. Do not run `npm run lint` and do not try to clear the repo's pre-existing failures — those files are out of scope.
 
 - [ ] **Step 6: Verify the hub renders and behaves**
 
@@ -944,8 +955,13 @@ export default async function CompetitorPage({
 
 - [ ] **Step 3: Verify types and lint pass**
 
-Run: `npx tsc --noEmit && npm run lint`
-Expected: no errors.
+Run: `npx tsc --noEmit`
+Expected: no output.
+
+Then lint **only the files this task touched** — see the lint baseline in Global Constraints:
+
+Run: `npx eslint <the files you created or modified in this task>`
+Expected: no output. Do not run `npm run lint` and do not try to clear the repo's pre-existing failures — those files are out of scope.
 
 - [ ] **Step 4: Verify the deep routes server-render their competitor**
 
@@ -1031,8 +1047,13 @@ Replace it with a stacked pair, matching the `flex flex-col gap-10` pattern alre
 
 - [ ] **Step 2: Verify types and lint pass**
 
-Run: `npx tsc --noEmit && npm run lint`
-Expected: no errors.
+Run: `npx tsc --noEmit`
+Expected: no output.
+
+Then lint **only the files this task touched** — see the lint baseline in Global Constraints:
+
+Run: `npx eslint <the files you created or modified in this task>`
+Expected: no output. Do not run `npm run lint` and do not try to clear the repo's pre-existing failures — those files are out of scope.
 
 - [ ] **Step 3: Verify the links are real anchors**
 
@@ -1297,8 +1318,13 @@ In `public/og/README.md`, add four rows to the end of the "Files → routes" tab
 
 - [ ] **Step 9: Verify and commit**
 
-Run: `npx tsc --noEmit && npm run lint`
-Expected: no errors.
+Run: `npx tsc --noEmit`
+Expected: no output.
+
+Then lint **only the files this task touched** — see the lint baseline in Global Constraints:
+
+Run: `npx eslint <the files you created or modified in this task>`
+Expected: no output. Do not run `npm run lint` and do not try to clear the repo's pre-existing failures — those files are out of scope.
 
 ```bash
 git status --short
@@ -1322,10 +1348,18 @@ git commit -m "feat(compare): add share cards for the four compare routes"
 Run: `npm test`
 Expected: all suites pass, including `lib/compare.test.ts` and `lib/seo/sitemap.test.ts`.
 
-- [ ] **Step 2: Typecheck and lint the whole repo**
+- [ ] **Step 2: Typecheck the repo, lint everything this branch added**
 
-Run: `npx tsc --noEmit && npm run lint`
-Expected: no errors.
+Run: `npx tsc --noEmit`
+Expected: no output.
+
+Run: `npx eslint lib/compare.ts lib/compare.test.ts components/compare app/compare components/ui/callout.tsx components/site/site-footer.tsx lib/seo/sitemap.ts lib/seo/sitemap.test.ts`
+Expected: no output.
+
+Then confirm this branch added nothing to the repo's lint baseline:
+
+Run: `npm run lint 2>&1 | tail -3`
+Expected: `✖ 14 problems (8 errors, 6 warnings)` — the same count `main` produces, all in `components/tools/*` and `lib/hubspot/*`. A higher number means this branch introduced a lint problem; find and fix it in our files only. Do not fix the pre-existing 14.
 
 - [ ] **Step 3: Production build**
 
