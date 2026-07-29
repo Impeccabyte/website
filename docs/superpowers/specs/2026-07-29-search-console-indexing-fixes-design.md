@@ -10,8 +10,9 @@ showed these are four unrelated problems, only two of which are defects in this 
 
 ### Diagnosis (measured 2026-07-29)
 
-Bucket totals across the 29 reported URLs: **20** on `www.impeccabyte.com` (13 mapped to
-redirects + 7 retired), **6** on `app.impeccabyte.com`, **3** on the apex.
+Bucket totals across the 29 reported URLs: **20** on `www.impeccabyte.com` (12 mapped to
+redirect rules, 1 handled by the host catch-all, 7 retired), **6** on `app.impeccabyte.com`,
+**3** on the apex.
 
 **`www.impeccabyte.com` — 20 URLs.** `www` does not resolve to Railway. It resolves to
 `192.64.119.103`, which `whois` identifies as Namecheap's URL-forwarding service. Behaviour:
@@ -40,9 +41,9 @@ noise, not a defect.
 
 **Apex duplicate — 1 URL.** `/?ref=ry.php` returns 200 and is a duplicate of the homepage.
 This one is a real repo defect: the live homepage emits **no `<link rel="canonical">` at
-all**. Only 3 of 18 routes set `alternates.canonical`
-(`app/integrations`, `app/locations`, `app/locations/[city]`), violating the standing
-local-SEO checklist requirement that every page carry a self-referencing canonical.
+all**. 11 of 18 routes omit `alternates.canonical`, violating the standing local-SEO
+checklist requirement that every page carry a self-referencing canonical. See section 4 for
+the verified list.
 
 ## Decisions taken
 
@@ -94,7 +95,6 @@ www→apex→final.
 
 | Legacy source | Destination | Rationale |
 | --- | --- | --- |
-| `/about` | `https://impeccabyte.com/about` | direct equivalent |
 | `/homepage/about` | `https://impeccabyte.com/about` | direct equivalent |
 | `/payments/industry/ecommerce` | `https://impeccabyte.com/industries/ecommerce` | direct equivalent |
 | `/payments/industry/specialty-markets` | `https://impeccabyte.com/industries/highrisk` | "specialty markets" is the high-risk euphemism |
@@ -118,6 +118,11 @@ Followed by the host catch-all:
 ```
 
 All entries are `permanent: true`.
+
+**`www/about/` gets no rule of its own.** `/about` is a live apex route, so a rule mapping
+`/about` → `https://impeccabyte.com/about` would also match on the apex and loop forever. The
+host catch-all already sends `www/about` to the identical apex path, which is the correct
+outcome. Same reasoning applies to any future legacy path that collides with a live route.
 
 **Trailing slashes.** Every legacy URL in the GSC export ends in `/`; this project uses the
 Next default `trailingSlash: false`. Sources are written without the trailing slash on the
@@ -152,17 +157,25 @@ Affected URLs: `/business/`, `/business/services/articles-of-amendment/`,
 
 ### 4. Canonicals
 
-Add `alternates: { canonical: "/…" }` — relative, resolved against the existing
-`metadataBase` in `app/layout.tsx:37` — to the 14 routes missing it:
+Corrected during planning (2026-07-29): the original count of 14 was wrong. Grepping
+`alternates` under `app/` alone missed that `/privacy`, `/terms`, and `/cookies` receive
+canonicals from the shared `legalMetadata()` helper in `components/site/legal-page.tsx:69`,
+and `app/tools/analyze/page.tsx:7` already sets `robots: { index: false, follow: false }`.
+Confirmed by curling the live site. **11 routes** actually need the fix:
 
 `/`, `/about`, `/partnerships`, `/pricing`, `/surcharge`, `/cash-discount`, `/benefits/travel`,
-`/contact`, `/chamber`, `/privacy`, `/terms`, `/cookies`, `/products/[key]`, `/industries/[key]`.
+`/contact`, `/chamber`, `/products/[key]`, `/industries/[key]`.
 
-Dynamic routes derive the canonical from the resolved key, matching the existing
-`cityCanonical(c.slug)` pattern in `app/locations/[city]/page.tsx:32`.
+Add `alternates: { canonical: "/…" }` — relative, resolved against the existing
+`metadataBase` in `app/layout.tsx:37`. Dynamic routes derive the canonical from the resolved
+key, matching the existing `cityCanonical(c.slug)` pattern in
+`app/locations/[city]/page.tsx:32`.
 
-`app/tools/analyze/page.tsx` gets `robots: { index: false }` instead of a canonical —
-`robots.txt` already disallows `/tools/`, and the page is password-gated.
+`app/page.tsx` has no `export const metadata` block at all — it inherits title and description
+from the root layout. It gets a minimal block containing only `alternates`, so the layout's
+`title.default` and description continue to apply unchanged.
+
+No change to `app/tools/analyze/page.tsx` or the legal pages.
 
 This is what fixes `/?ref=ry.php`.
 
