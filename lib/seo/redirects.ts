@@ -84,28 +84,23 @@ export const LEGACY_REDIRECTS: LegacyRedirect[] = [
  */
 export function legacyRedirects(): LegacyRedirect[] {
   return [
-    // Every reported legacy URL ends in a trailing slash, but this project runs with
-    // trailingSlash: false. These `/source/` variants exist so a slashed request can
-    // match a rule directly if it ever reaches the redirects() table with the slash
-    // intact (e.g. under a future skipTrailingSlashRedirect + proxy.ts setup).
+    // Every reported legacy URL ends in a trailing slash, but LEGACY_REDIRECTS' sources
+    // never do. Slashed legacy URLs therefore resolve in two hops, not one: Next's
+    // built-in trailingSlash normalizer strips the slash BEFORE redirects() is
+    // consulted at all, then the rule above fires on the now-unslashed path. Verified
+    // against a real build (`npm run build && npm run start` + curl), not assumed — a
+    // `/source/` sibling rule was tried and confirmed to never match, because the
+    // slash is already gone by the time redirects() runs. It was removed as dead code.
     //
-    // KNOWN LIMITATION, confirmed empirically against `npm run start` (see
-    // task-3-report.md, Step 7): Next 16.2.10's built-in trailing-slash normalizer
-    // runs BEFORE redirects() is consulted and intercepts slashed requests
-    // unconditionally, even when an exact-match `/source/` rule exists here. A slashed
-    // legacy hit therefore still takes two hops (normalize to the unslashed local path,
-    // then match the rule above) rather than one. Eliminating the extra hop requires
-    // `skipTrailingSlashRedirect: true` plus a `proxy.ts` doing the trailing-slash
-    // handling manually — out of scope for this task.
-    //
-    // LEGACY_REDIRECTS is kept as an exact, unbroken prefix here (rather than
-    // interleaving each rule with its slash variant) because the test suite's
-    // "orders specific rules before the catch-all" case asserts
-    // `all.slice(0, LEGACY_REDIRECTS.length)).toEqual(LEGACY_REDIRECTS)`. Order among
-    // non-conflicting sources has no functional effect — Next matches by exact source
-    // string — so appending the slash variants afterward is equivalent to interleaving.
+    // Two hops is the accepted, final state, not a gap to close. Googlebot follows up
+    // to 10 redirects and passes link equity through the chain, so the extra hop is
+    // immaterial. The only way to reach one hop is `skipTrailingSlashRedirect: true`,
+    // which disables normalization sitewide and would let both `/about` and `/about/`
+    // render as live pages — a duplicate-content regression, and strictly worse than
+    // one extra hop on legacy URLs that are being deindexed anyway. Do not add
+    // `skipTrailingSlashRedirect`, a `proxy.ts`, or any other mechanism to chase the
+    // single hop here.
     ...LEGACY_REDIRECTS,
-    ...LEGACY_REDIRECTS.map((r) => ({ ...r, source: `${r.source}/` })),
     {
       source: "/:path*",
       has: [{ type: "host", value: WWW_HOST }],
