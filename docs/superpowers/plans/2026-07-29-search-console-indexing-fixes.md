@@ -645,10 +645,15 @@ Expected: FAIL — `Failed to resolve import "@/lib/seo/redirects"`.
 
 - [ ] **Step 3: Write the redirect module**
 
-Create `lib/seo/redirects.ts`:
+Create `lib/seo/redirects.ts`. Note the **relative** import of `SITE_URL`: the other
+`lib/seo/*` modules use the `@/` alias, but `next.config.ts` loads this file through
+Next's own TypeScript loader, which may not honour `tsconfig.json` path aliases.
+A relative specifier resolves under the config loader, the Next build, and vitest alike.
 
 ```ts
-import { SITE_URL } from "@/lib/seo/org";
+// Relative, not "@/lib/seo/org" — next.config.ts loads this outside the app's
+// module resolution, where the @/ alias is not guaranteed to resolve.
+import { SITE_URL } from "./org";
 
 /** The apex is canonical everywhere (metadataBase, sitemap, JSON-LD), so www redirects to it. */
 export const WWW_HOST = "www.impeccabyte.com";
@@ -963,112 +968,135 @@ body for /business and everything beneath it."
 
 ---
 
-### Task 5: End-to-end verification script and DNS runbook
+### Task 5: Live verification suite and DNS runbook
 
 The DNS cutover is an owner action; this task ships the tooling that proves it worked.
 
 **Files:**
-- Create: `scripts/check-indexing-fixes.mjs`
+- Create: `lib/seo/live-check.test.ts`
 - Create: `docs/runbooks/2026-07-29-www-dns-cutover.md`
-- Modify: `package.json` (add a `check:seo` script)
 
 **Interfaces:**
-- Consumes: `lib/seo/redirects.ts` (`REPORTED_LEGACY_PATHS`, `LEGACY_REDIRECTS`, `GONE_PREFIX`), `lib/seo/sitemap.ts` (`sitemapPaths`).
-- Produces: `npm run check:seo [baseUrl]` — exits non-zero on any URL whose live status or canonical is wrong.
+- Consumes: `LEGACY_REDIRECTS`, `REPORTED_LEGACY_PATHS`, `GONE_PREFIX` from `lib/seo/redirects.ts`; `sitemapPaths()` from `lib/seo/sitemap.ts`; `SITE_URL` from `lib/seo/org.ts`.
+- Produces: `SEO_CHECK_BASE_URL=<url> npx vitest run lib/seo/live-check.test.ts` — fails on any URL whose live status, redirect target, or canonical is wrong.
 
-- [ ] **Step 1: Write the verification script**
+**Why a gated vitest suite and not a standalone script:** a plain Node script cannot resolve
+this repo's `@/` path alias, which `lib/seo/sitemap.ts` and `lib/data.ts` both use — verified
+during pre-flight (`ERR_MODULE_NOT_FOUND: Cannot find package '@/lib'`), including under
+`--experimental-strip-types`. Vitest already resolves the alias, so the suite imports the
+redirect map directly and the checked-in URL lists stay the single source of truth.
 
-Create `scripts/check-indexing-fixes.mjs`:
+- [ ] **Step 1: Write the gated live-check suite**
 
-```js
-// Verifies the live site against the fixes in
-// docs/superpowers/specs/2026-07-29-search-console-indexing-fixes-design.md
-// Usage: node scripts/check-indexing-fixes.mjs [https://impeccabyte.com]
-import { LEGACY_REDIRECTS, REPORTED_LEGACY_PATHS, GONE_PREFIX } from "../lib/seo/redirects.ts";
-import { sitemapPaths } from "../lib/seo/sitemap.ts";
+Create `lib/seo/live-check.test.ts`:
 
-const APEX = process.argv[2] ?? "https://impeccabyte.com";
-const WWW = APEX.replace("://", "://www.");
-const failures = [];
-const ok = (m) => console.log(`  ok   ${m}`);
-const bad = (m) => { failures.push(m); console.log(`  FAIL ${m}`); };
+```ts
+import { describe, it, expect } from "vitest";
+import { LEGACY_REDIRECTS, REPORTED_LEGACY_PATHS, GONE_PREFIX } from "@/lib/seo/redirects";
+import { sitemapPaths } from "@/lib/seo/sitemap";
+import { SITE_URL } from "@/lib/seo/org";
 
-async function head(url) {
+/**
+ * Network checks against a deployed site. Skipped unless SEO_CHECK_BASE_URL is set, so
+ * `npm run test` stays offline and deterministic. Run after a deploy, and again after the
+ * www DNS cutover (see docs/runbooks/2026-07-29-www-dns-cutover.md):
+ *
+ *   SEO_CHECK_BASE_URL=https://impeccabyte.com npx vitest run lib/seo/live-check.test.ts
+ */
+const BASE = process.env.SEO_CHECK_BASE_URL;
+const WWW = BASE?.replace("://", "://www.");
+const TIMEOUT = 30_000;
+
+async function head(url: string) {
   try {
     const res = await fetch(url, { redirect: "manual" });
     return { status: res.status, location: res.headers.get("location") };
   } catch (e) {
-    return { status: 0, error: String(e) };
+    return { status: 0, location: null, error: String(e) };
   }
 }
 
-console.log(`\n1. www is reachable over HTTPS (the DNS cutover)`);
-{
-  const r = await head(`${WWW}/`);
-  if (r.status === 0) bad(`${WWW}/ unreachable (${r.error}) — DNS/TLS not cut over yet`);
-  else if ([301, 302, 307, 308].includes(r.status)) ok(`${WWW}/ -> ${r.status} ${r.location}`);
-  else bad(`${WWW}/ returned ${r.status}, expected a redirect to the apex`);
+async function canonicalOf(url: string) {
+  const html = await (await fetch(url)).text();
+  return html.match(/<link rel="canonical" href="([^"]+)"/)?.[1] ?? null;
 }
 
-console.log(`\n2. Legacy URLs redirect to their mapped destination`);
-for (const rule of LEGACY_REDIRECTS) {
-  for (const src of [rule.source, `${rule.source}/`]) {
-    const r = await head(`${WWW}${src}`);
-    if (r.status === 308 && r.location === rule.destination) ok(`${src} -> ${r.location}`);
-    else if ([301, 302, 307, 308].includes(r.status)) bad(`${src} -> ${r.status} ${r.location} (expected 308 ${rule.destination})`);
-    else bad(`${src} -> ${r.status} (expected 308 ${rule.destination})`);
-  }
-}
+const LEGACY_CASES = LEGACY_REDIRECTS.flatMap((r) => [
+  { src: r.source, dest: r.destination },
+  // Every URL Google reported ends in a slash, so both forms must resolve in one hop.
+  { src: `${r.source}/`, dest: r.destination },
+]);
 
-console.log(`\n3. Retired /business URLs return 410`);
-for (const p of REPORTED_LEGACY_PATHS.filter((p) => p === GONE_PREFIX || p.startsWith(`${GONE_PREFIX}/`))) {
-  const r = await head(`${APEX}${p}`);
-  if (r.status === 410) ok(`${p} -> 410`);
-  else if (r.status === 308) ok(`${p} -> 308 ${r.location} (normalization, verify it ends in 410)`);
-  else bad(`${p} -> ${r.status} (expected 410)`);
-}
+const GONE_PATHS = REPORTED_LEGACY_PATHS.filter(
+  (p) => p === GONE_PREFIX || p.startsWith(`${GONE_PREFIX}/`)
+);
 
-console.log(`\n4. Every indexable page declares its own canonical`);
-for (const url of sitemapPaths()) {
-  const res = await fetch(url);
-  const html = await res.text();
-  const m = html.match(/<link rel="canonical" href="([^"]+)"/);
-  if (!m) bad(`${url} has NO canonical`);
-  else if (m[1] !== url) bad(`${url} canonical points at ${m[1]}`);
-  else ok(`${url}`);
-}
+describe.skipIf(!BASE)("live site indexing fixes", () => {
+  it(
+    "serves www over HTTPS and redirects it to the apex",
+    async () => {
+      const r = await head(`${WWW}/`);
+      expect(r.status, `${WWW}/ is unreachable — DNS/TLS not cut over yet`).not.toBe(0);
+      expect([301, 302, 307, 308]).toContain(r.status);
+    },
+    TIMEOUT
+  );
 
-console.log(`\n5. The homepage query-param duplicate resolves to the homepage`);
-{
-  const res = await fetch(`${APEX}/?ref=ry.php`);
-  const m = (await res.text()).match(/<link rel="canonical" href="([^"]+)"/);
-  if (m?.[1] === `${APEX}/`) ok(`/?ref=ry.php canonical -> ${m[1]}`);
-  else bad(`/?ref=ry.php canonical -> ${m?.[1] ?? "NONE"} (expected ${APEX}/)`);
-}
+  it.each(LEGACY_CASES)(
+    "redirects www$src to its mapped destination in one hop",
+    async ({ src, dest }) => {
+      const r = await head(`${WWW}${src}`);
+      expect(r.status).toBe(308);
+      expect(r.location).toBe(dest);
+    },
+    TIMEOUT
+  );
 
-console.log(failures.length ? `\n${failures.length} FAILURES\n` : `\nAll checks passed\n`);
-process.exit(failures.length ? 1 : 0);
+  it.each(GONE_PATHS)(
+    "returns 410 for the retired %s",
+    async (path) => {
+      const r = await head(`${BASE}${path}`);
+      // A 308 first is fine (trailing-slash normalization) as long as it ends at 410.
+      const final = r.status === 308 ? await head(new URL(r.location!, BASE).toString()) : r;
+      expect(final.status).toBe(410);
+    },
+    TIMEOUT
+  );
+
+  // The canonical is always the absolute apex URL (from metadataBase), whatever host we
+  // probe — so localhost and production are both expected to emit the SITE_URL form.
+  it.each(sitemapPaths())(
+    "declares a self-referencing canonical on %s",
+    async (url) => {
+      expect(await canonicalOf(url.replace(SITE_URL, BASE!))).toBe(url);
+    },
+    TIMEOUT
+  );
+
+  it(
+    "canonicalises the /?ref=ry.php duplicate to the homepage",
+    async () => {
+      expect(await canonicalOf(`${BASE}/?ref=ry.php`)).toBe(`${SITE_URL}/`);
+    },
+    TIMEOUT
+  );
+});
 ```
 
-- [ ] **Step 2: Add the npm script**
+- [ ] **Step 2: Confirm the suite is inert without the env var**
 
-In `package.json`, add to `scripts`:
-
-```json
-    "check:seo": "node --experimental-strip-types scripts/check-indexing-fixes.mjs",
-```
-
-Node's `--experimental-strip-types` lets the `.mjs` script import the `.ts` modules directly. The local Node is **v22.22.3**, which supports the flag (needs ≥ 22.6) — confirmed while writing this plan. If it fails on another machine, the fallback is to inline the path lists into the script as literal arrays rather than importing them; note that this loses the single-source guarantee, so the vitest fixture in Task 3 remains the authority.
+Run: `npm run test`
+Expected: PASS, with `lib/seo/live-check.test.ts` reported as skipped. The default test run must stay offline — if it tries to hit the network, `describe.skipIf` is wired wrong.
 
 - [ ] **Step 3: Run it against localhost and confirm it reports honestly**
 
-Run `npm run build && npm run start`, then:
+Run `npm run build && npm run start`, then in a second shell:
 
 ```bash
-npm run check:seo http://localhost:3000
+SEO_CHECK_BASE_URL=http://localhost:3000 npx vitest run lib/seo/live-check.test.ts
 ```
 
-Expected: sections 2–5 pass. **Section 1 will FAIL** against localhost (no www host) and section 2 will fail because `WWW` resolves to `http://www.localhost:3000` — that is expected pre-cutover. Confirm the script's exit code is non-zero and the failure text names the real reason. The point of this step is to prove the script detects problems rather than silently passing.
+Expected: the canonical, 410, and `?ref=` cases PASS. The www cases will **FAIL** — `http://www.localhost:3000` does not resolve — and that is correct pre-cutover. Confirm the failures name the www host rather than something unrelated. The point of this step is to prove the suite detects problems instead of silently passing; a fully green run here would mean the assertions are not actually firing.
 
 - [ ] **Step 4: Write the DNS runbook**
 
@@ -1105,7 +1133,7 @@ Until this cutover lands, the redirect map in `lib/seo/redirects.ts` cannot fire
 
     dig +short www.impeccabyte.com
     curl -sI https://www.impeccabyte.com/ | head -3         # expect 308 -> https://impeccabyte.com/
-    npm run check:seo https://impeccabyte.com               # expect all sections to pass
+    SEO_CHECK_BASE_URL=https://impeccabyte.com npx vitest run lib/seo/live-check.test.ts   # expect every case to pass
 
 **Then, in Google Search Console:**
 
@@ -1117,7 +1145,7 @@ Until this cutover lands, the redirect map in `lib/seo/redirects.ts` cannot fire
 3. Open the "Crawled - currently not indexed" report and click **Validate Fix**.
 
 **Expected timeline:** recrawling is on Google's schedule. Expect weeks, not days, for the
-20 legacy URLs to clear. Re-run `npm run check:seo` if the report still shows failures —
+20 legacy URLs to clear. Re-run the live-check suite if the report still shows failures —
 it distinguishes "our fix is broken" from "Google hasn't recrawled yet".
 
 **Rollback:** re-add the Namecheap `www` URL-redirect record. The apex is a separate
@@ -1132,12 +1160,15 @@ Expected: all pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add scripts/check-indexing-fixes.mjs docs/runbooks/2026-07-29-www-dns-cutover.md package.json
+git add lib/seo/live-check.test.ts docs/runbooks/2026-07-29-www-dns-cutover.md
 git commit -m "chore(seo): add indexing verification script and DNS cutover runbook
 
-npm run check:seo probes every reported URL and every sitemap page for
-the right status, redirect target, and canonical. The runbook covers the
-Namecheap -> Railway www cutover that the redirect map depends on."
+A vitest suite gated on SEO_CHECK_BASE_URL probes every reported URL and
+every sitemap page for the right status, redirect target, and canonical.
+It imports the redirect map directly, so the checked-in lists stay the
+single source of truth; a plain Node script could not, because it cannot
+resolve the repo's @/ path alias. The runbook covers the Namecheap ->
+Railway www cutover that the redirect map depends on."
 ```
 
 ---
@@ -1145,9 +1176,9 @@ Namecheap -> Railway www cutover that the redirect map depends on."
 ## Post-implementation
 
 1. Open a PR from `fix/search-console-indexing` to `main`.
-2. Deploy. Run `npm run check:seo https://impeccabyte.com` — sections 3, 4, and 5 must pass immediately; sections 1 and 2 will still fail until the DNS cutover.
+2. Deploy. Run `SEO_CHECK_BASE_URL=https://impeccabyte.com npx vitest run lib/seo/live-check.test.ts` — the 410, canonical, and `?ref=` cases must pass immediately; the www cases will still fail until the DNS cutover.
 3. Hand `docs/runbooks/2026-07-29-www-dns-cutover.md` to whoever owns the Namecheap account.
-4. After cutover, re-run `npm run check:seo` and confirm every section passes, then trigger **Validate Fix** in Search Console.
+4. After cutover, re-run the live-check suite and confirm every case passes, then trigger **Validate Fix** in Search Console.
 
 ## Out of scope
 
