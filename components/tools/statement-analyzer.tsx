@@ -181,17 +181,17 @@ export default function StatementAnalyzer() {
 
   function exportPDF() {
     const node = reportRef.current;
-    if (!node) { try { window.print(); } catch (e) {} return; }
+    if (!node) { try { window.print(); } catch {} return; }
     const html = '<!doctype html><html><head><meta charset="utf-8"><title>'
       + (merchant || "Impeccabyte") + ' — statement analysis</title><style>' + DS_CSS
       + '@page{size:letter;margin:12mm;} html,body{background:#fff;margin:0;padding:16px;}'
       + '*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}'
       + '</style></head><body class="ib-root">' + node.outerHTML + '</body></html>';
     let w: Window | null = null;
-    try { w = window.open("", "_blank"); } catch (e) { w = null; }
+    try { w = window.open("", "_blank"); } catch { w = null; }
     if (w && w.document) {
       w.document.open(); w.document.write(html); w.document.close(); w.focus();
-      setTimeout(() => { try { w?.print(); } catch (e) {} }, 700);   // let fonts settle
+      setTimeout(() => { try { w?.print(); } catch {} }, 700);   // let fonts settle
     } else {
       // Popups blocked — hand back a self-contained HTML file to open & print/save as PDF
       try {
@@ -201,7 +201,7 @@ export default function StatementAnalyzer() {
         a.href = url; a.download = (merchant || "impeccabyte").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-analysis.html";
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 4000);
-      } catch (e) { try { window.print(); } catch (e2) {} }
+      } catch { try { window.print(); } catch {} }
     }
   }
 
@@ -243,7 +243,7 @@ export default function StatementAnalyzer() {
       setVolume(Number(parsed.volume) || 0); setTxns(Number(parsed.txns) || 0);
       setItems(mapped); setNextId(1000 + mapped.length);
       setStatus({ state: "ok", msg: "Pulled " + mapped.length + " line items — check every figure before quoting." });
-    } catch (e) {
+    } catch {
       setStatus({ state: "error", msg: "Couldn't auto-extract. Enter the figures by hand below, or try a clearer scan." });
     }
   }

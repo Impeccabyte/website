@@ -100,14 +100,14 @@ describe("buildDealPayload", () => {
   });
 
   it("omits current_processor when empty", () => {
-    const p = buildDealPayload({ ...sample, currentProcessor: "" }, "555") as any;
+    const p = buildDealPayload({ ...sample, currentProcessor: "" }, "555");
     expect(p.properties).not.toHaveProperty("current_processor");
   });
 });
 
 describe("buildNotePayload", () => {
   it("summarizes the submission and associates to the deal", () => {
-    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z") as any;
+    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z");
     expect(p.properties.hs_timestamp).toBe("2026-07-09T12:00:00.000Z");
     expect(p.properties.hs_note_body).toContain("Saffron &amp; Co");
     expect(p.properties.hs_note_body).toContain("Food &amp; drink"); // industry label, HTML-escaped
@@ -153,24 +153,24 @@ describe("validateStatementFile", () => {
 
 describe("buildDealPayload — statement stage", () => {
   it("uses the Statement Requested stage when hasStatement is true", () => {
-    const p = buildDealPayload(sample, "555", true) as any;
+    const p = buildDealPayload(sample, "555", true);
     expect(p.properties.dealstage).toBe("qualifiedtobuy");
   });
 
   it("keeps New Prospect when hasStatement is false/omitted", () => {
-    const p = buildDealPayload(sample, "555") as any;
+    const p = buildDealPayload(sample, "555");
     expect(p.properties.dealstage).toBe("3963348702");
   });
 });
 
 describe("buildNotePayload — attachment", () => {
   it("adds hs_attachment_ids when an attachmentId is provided", () => {
-    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z", "77123") as any;
+    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z", "77123");
     expect(p.properties.hs_attachment_ids).toBe("77123");
   });
 
   it("omits hs_attachment_ids when no attachmentId is given", () => {
-    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z") as any;
+    const p = buildNotePayload(sample, "999", "2026-07-09T12:00:00.000Z");
     expect(p.properties).not.toHaveProperty("hs_attachment_ids");
   });
 });

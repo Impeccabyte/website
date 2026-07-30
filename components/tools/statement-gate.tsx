@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import StatementAnalyzer from "@/components/tools/statement-analyzer";
+import {
+  isUnlocked,
+  isUnlockedOnServer,
+  markUnlocked,
+  subscribeToUnlock,
+} from "@/lib/tools/unlock-store";
 
 const PASSWORD = "BYTE";
-const STORAGE_KEY = "ib-analyze-unlocked";
 
 /**
  * Soft, client-side password gate for the internal Statement Analyzer.
@@ -13,27 +18,14 @@ const STORAGE_KEY = "ib-analyze-unlocked";
  * never surface it. Unlock is remembered for the browser session.
  */
 export default function StatementGate() {
-  const [unlocked, setUnlocked] = useState(false);
+  const unlocked = useSyncExternalStore(subscribeToUnlock, isUnlocked, isUnlockedOnServer);
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem(STORAGE_KEY) === "1") setUnlocked(true);
-    } catch {
-      /* sessionStorage unavailable — stay locked */
-    }
-  }, []);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (value.trim() === PASSWORD) {
-      try {
-        sessionStorage.setItem(STORAGE_KEY, "1");
-      } catch {
-        /* ignore */
-      }
-      setUnlocked(true);
+      markUnlocked();
       setError(false);
     } else {
       setError(true);
