@@ -13,8 +13,12 @@ import { DarkCTA } from "@/components/site/dark-cta";
 import { TiltPanel } from "@/components/site/tilt-panel";
 import { ProductGraphic } from "@/components/graphics/product-graphic";
 import { ProductGraphic2 } from "@/components/graphics/product-graphic-2";
-import { PRODUCTS, productOrder, type ProductKey } from "@/lib/data";
+import { PRODUCTS, productOrder, isProductKey } from "@/lib/data";
 import { ogImages } from "@/lib/og/meta";
+
+// Only the slugs from generateStaticParams resolve; anything else 404s at the
+// routing layer instead of reaching the page.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return productOrder.map((key) => ({ key }));
@@ -22,7 +26,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ key: string }> }): Promise<Metadata> {
   const { key } = await params;
-  const p = PRODUCTS[key as ProductKey];
+  const p = isProductKey(key) ? PRODUCTS[key] : null;
   if (!p) return {};
   return {
     title: `${p.titleA} ${p.titleEm} · ${p.nav}`,
@@ -34,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ key: stri
 
 export default async function ProductPage({ params }: { params: Promise<{ key: string }> }) {
   const { key } = await params;
-  const p = PRODUCTS[key as ProductKey];
+  const p = isProductKey(key) ? PRODUCTS[key] : null;
   if (!p) notFound();
 
   const related = p.related.filter((k) => !PRODUCTS[k].comingSoon);

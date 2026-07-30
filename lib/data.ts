@@ -383,6 +383,21 @@ export const solutionNavOrder: SolutionKey[] = [
   "retail", "food", "services", "ecommerce", "nonprofits", "highrisk",
 ];
 
+/* ---- Route-param guards ----
+   Use these before indexing PRODUCTS / SOLUTIONS with a value off the URL.
+   `Object.hasOwn` rather than `key in RECORD` or an unchecked `as` cast: every
+   object inherits from Object.prototype, so `PRODUCTS.toString` is a truthy
+   function. A cast-and-truthy-check let /products/toString skip notFound() and
+   throw downstream — a 500 on a public URL. Pair with `dynamicParams = false`
+   on the route so unknown slugs 404 at the routing layer too. */
+export function isProductKey(value: string): value is ProductKey {
+  return Object.hasOwn(PRODUCTS, value);
+}
+
+export function isSolutionKey(value: string): value is SolutionKey {
+  return Object.hasOwn(SOLUTIONS, value);
+}
+
 export const homeFeatureKeys: ProductKey[] = productOrder.slice(0, 6);
 export const homeSolutionKeys: SolutionKey[] = solutionNavOrder;
 export const footerProductKeys: ProductKey[] = productOrder.slice(0, 5);

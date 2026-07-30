@@ -11,8 +11,12 @@ import { ProductCard } from "@/components/site/entry-card";
 import { DarkCTA } from "@/components/site/dark-cta";
 import { TiltPanel } from "@/components/site/tilt-panel";
 import { SolutionGraphic } from "@/components/graphics/solution-graphic";
-import { SOLUTIONS, type SolutionKey } from "@/lib/data";
+import { SOLUTIONS, isSolutionKey, type SolutionKey } from "@/lib/data";
 import { ogImages } from "@/lib/og/meta";
+
+// Only the slugs from generateStaticParams resolve; anything else 404s at the
+// routing layer instead of reaching the page.
+export const dynamicParams = false;
 
 // Every solution (incl. agents, reachable from Partnerships) gets a static page.
 export function generateStaticParams() {
@@ -21,7 +25,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ key: string }> }): Promise<Metadata> {
   const { key } = await params;
-  const s = SOLUTIONS[key as SolutionKey];
+  const s = isSolutionKey(key) ? SOLUTIONS[key] : null;
   if (!s) return {};
   return {
     title: `${s.titleA} ${s.titleEm} · ${s.nav}`,
@@ -33,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ key: stri
 
 export default async function SolutionPage({ params }: { params: Promise<{ key: string }> }) {
   const { key } = await params;
-  const s = SOLUTIONS[key as SolutionKey];
+  const s = isSolutionKey(key) ? SOLUTIONS[key] : null;
   if (!s) notFound();
 
   return (

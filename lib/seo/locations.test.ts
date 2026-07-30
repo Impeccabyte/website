@@ -10,6 +10,20 @@ describe("CITIES", () => {
     expect(Object.keys(CITIES).sort()).toEqual(["austin", "dallas", "san-antonio"]);
   });
 
+  // getCity indexed CITIES directly, so inherited keys resolved to functions on
+  // Object.prototype. app/locations/[city] is shielded by dynamicParams = false,
+  // but the lookup should not hand back a City-shaped lie regardless of caller.
+  it("returns undefined for inherited Object.prototype keys", () => {
+    for (const key of ["toString", "constructor", "__proto__", "valueOf", "hasOwnProperty"]) {
+      expect(getCity(key), key).toBeUndefined();
+    }
+  });
+
+  it("returns undefined for unknown slugs", () => {
+    expect(getCity("houston")).toBeUndefined();
+    expect(getCity("")).toBeUndefined();
+  });
+
   it("gives each city a unique metaTitle and >=4 FAQs", () => {
     const titles = citySlugs().map((s) => getCity(s)!.metaTitle);
     expect(new Set(titles).size).toBe(3);
