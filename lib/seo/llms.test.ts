@@ -3,6 +3,7 @@ import { llmsTxt } from "@/lib/seo/llms";
 import { productOrder, solutionNavOrder } from "@/lib/data";
 import { citySlugs } from "@/lib/seo/locations";
 import { sitemapPaths } from "@/lib/seo/sitemap";
+import { SITE_URL } from "@/lib/seo/org";
 
 describe("llmsTxt", () => {
   const txt = llmsTxt();
@@ -25,10 +26,24 @@ describe("llmsTxt", () => {
     expect(txt).not.toContain("/tools");
   });
 
-  it("covers every URL in the sitemap", () => {
+  // Anchored on the markdown link form `](<url>):` rather than a bare substring.
+  // A plain `toContain(url)` passes vacuously whenever a hub path is a lexical
+  // prefix of a deeper one already listed — "…/compare" is a substring of
+  // "…/compare/square", so the hub could be dropped without failing this guard.
+  it("links every URL in the sitemap", () => {
     const txt = llmsTxt();
     for (const url of sitemapPaths()) {
-      expect(txt, `${url} is in the sitemap but missing from llms.txt`).toContain(url);
+      expect(txt, `${url} is in the sitemap but not linked from llms.txt`).toContain(`](${url}):`);
     }
+  });
+
+  it("would catch a dropped hub link that a bare substring check misses", () => {
+    // Guards the guard: proves the anchoring above is load-bearing.
+    const withoutCompareHub = llmsTxt()
+      .split("\n")
+      .filter((line) => !line.includes(`](${SITE_URL}/compare):`))
+      .join("\n");
+    expect(withoutCompareHub).toContain(`${SITE_URL}/compare`); // bare substring still matches
+    expect(withoutCompareHub).not.toContain(`](${SITE_URL}/compare):`); // anchored check does not
   });
 });

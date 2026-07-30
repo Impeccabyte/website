@@ -12,7 +12,12 @@ function authHeaders(): HeadersInit {
   return { Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
 }
 
-async function hsPost(path: string, body: unknown): Promise<any> {
+/**
+ * POSTs to a HubSpot endpoint. Generic in the response shape because each endpoint
+ * returns something different — callers declare the slice they actually read, which
+ * keeps the narrowing honest instead of casting the whole thing to `any`.
+ */
+async function hsPost<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${HUBSPOT_BASE}${path}`, {
     method: "POST",
     headers: authHeaders(),
@@ -22,11 +27,11 @@ async function hsPost(path: string, body: unknown): Promise<any> {
     const text = await res.text();
     throw new Error(`HubSpot ${path} failed: ${res.status} ${text}`);
   }
-  return res.json();
+  return res.json() as Promise<T>;
 }
 
 export async function upsertContactByEmail(d: QuoteInput): Promise<string> {
-  const json = await hsPost("/crm/v3/objects/contacts/batch/upsert", {
+  const json = await hsPost<{ results?: { id?: string }[] }>("/crm/v3/objects/contacts/batch/upsert", {
     inputs: [{ idProperty: "email", id: d.email, properties: buildContactProperties(d) }],
   });
   const id = json?.results?.[0]?.id;
@@ -56,11 +61,11 @@ export async function uploadStatementFile(file: File): Promise<string> {
 }
 
 export async function createDeal(d: QuoteInput, contactId: string, hasStatement = false): Promise<string> {
-  const json = await hsPost("/crm/v3/objects/deals", buildDealPayload(d, contactId, hasStatement));
+  const json = await hsPost<{ id?: string }>("/crm/v3/objects/deals", buildDealPayload(d, contactId, hasStatement));
   if (!json?.id) throw new Error(`HubSpot deal create returned no id: ${JSON.stringify(json)}`);
   return json.id;
 }
 
 export async function createNote(d: QuoteInput, dealId: string, isoTimestamp: string, attachmentId?: string): Promise<void> {
-  await hsPost("/crm/v3/objects/notes", buildNotePayload(d, dealId, isoTimestamp, attachmentId));
+  await hsPost<unknown>("/crm/v3/objects/notes", buildNotePayload(d, dealId, isoTimestamp, attachmentId));
 }

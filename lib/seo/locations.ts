@@ -124,8 +124,14 @@ export function citySlugs(): string[] {
   return Object.keys(CITIES);
 }
 
+/**
+ * `Object.hasOwn` rather than a bare index: `CITIES.toString` inherits a truthy
+ * function from Object.prototype, so a bare lookup hands back a non-City that
+ * passes an `if (!c)` check. app/locations/[city] is additionally shielded by
+ * `dynamicParams = false`, but the lookup should not lie to any caller.
+ */
 export function getCity(slug: string): City | undefined {
-  return CITIES[slug];
+  return Object.hasOwn(CITIES, slug) ? CITIES[slug] : undefined;
 }
 
 export function cityCanonical(slug: string): string {

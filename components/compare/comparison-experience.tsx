@@ -92,10 +92,19 @@ export function ComparisonExperience({
             })}
           </div>
 
-          {/* Keyed on the slug: React remounts the subtree, which replays .ib-cmp-swap.
-              aria-live="polite" announces the swapped content to screen readers —
-              aria-pressed on the pills alone doesn't tell them what changed below. */}
-          <div key={active} className="ib-cmp-swap" aria-live="polite">
+          {/* The live region is this small, PERSISTENT node — not the swapped block.
+              A live region that is itself remounted arrives pre-populated in one
+              commit, and several screen readers only announce *mutations* within an
+              existing region, so announcing from the keyed div below is unreliable.
+              Announcing the whole table would also be far too verbose; naming the
+              competitor is the useful part. Content present at load is not
+              announced, so this stays quiet until the reader actually switches. */}
+          <p role="status" aria-live="polite" className="sr-only">
+            Now comparing Impeccabyte with {competitor.name}.
+          </p>
+
+          {/* Keyed on the slug: React remounts the subtree, which replays .ib-cmp-swap. */}
+          <div key={active} className="ib-cmp-swap">
             <ComparisonBlock competitor={competitor} showHeading={variant === "hub"} />
           </div>
         </Container>
